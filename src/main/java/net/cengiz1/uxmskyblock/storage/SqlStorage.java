@@ -71,6 +71,37 @@ public class SqlStorage implements Storage {
         addColumnIfMissing("bank", "DOUBLE");
         addColumnIfMissing("warps", "TEXT");
         addColumnIfMissing("custom_roles", "TEXT");
+        addColumnIfMissing("coop", "TEXT");
+        addColumnIfMissing("biome", "VARCHAR(48)");
+        addColumnIfMissing("block_limits", "TEXT");
+        addColumnIfMissing("bank_interest_at", "BIGINT");
+
+        try (PreparedStatement statement = this.connection.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS island_bank_log (" +
+                        "island_uuid VARCHAR(36) NOT NULL," +
+                        "ts BIGINT NOT NULL," +
+                        "type VARCHAR(16) NOT NULL," +
+                        "actor VARCHAR(36)," +
+                        "actor_name VARCHAR(48)," +
+                        "amount DOUBLE NOT NULL," +
+                        "balance DOUBLE NOT NULL)")) {
+            statement.executeUpdate();
+        }
+        try (PreparedStatement statement = this.connection.prepareStatement(
+                "CREATE INDEX IF NOT EXISTS idx_bank_log_island ON island_bank_log (island_uuid, ts)")) {
+            statement.executeUpdate();
+        } catch (SQLException ignored) {
+        }
+
+        try (PreparedStatement statement = this.connection.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS island_ratings (" +
+                        "island_uuid VARCHAR(36) NOT NULL," +
+                        "rater VARCHAR(36) NOT NULL," +
+                        "rating INT NOT NULL," +
+                        "ts BIGINT NOT NULL," +
+                        "PRIMARY KEY (island_uuid, rater))")) {
+            statement.executeUpdate();
+        }
     }
 
     private void addColumnIfMissing(String column, String type) {
@@ -177,6 +208,10 @@ public class SqlStorage implements Storage {
         }
         island.setBorderColorRaw(result.getString("border_color"));
         island.setBankRaw(result.getDouble("bank"));
+        island.loadCoop(result.getString("coop"));
+        island.setBiomeRaw(result.getString("biome"));
+        island.loadBlockLimits(result.getString("block_limits"));
+        island.setBankInterestAtRaw(result.getLong("bank_interest_at"));
 
         island.markClean();
         return island;
@@ -187,12 +222,14 @@ public class SqlStorage implements Storage {
         String columns = "uuid, owner, world, grid_index, center_x, center_y, center_z, " +
                 "home_x, home_y, home_z, home_yaw, home_pitch, flags, " +
                 "name, locked, island_time, points, level, members, banned, upgrades, server, " +
-                "has_warp, warp_x, warp_y, warp_z, warp_yaw, warp_pitch, border_color, bank, warps, custom_roles";
-        String placeholders = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+                "has_warp, warp_x, warp_y, warp_z, warp_yaw, warp_pitch, border_color, bank, warps, custom_roles, " +
+                "coop, biome, block_limits, bank_interest_at";
+        String placeholders = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
         String updateAssignments = "owner=?, world=?, grid_index=?, center_x=?, center_y=?, center_z=?, " +
                 "home_x=?, home_y=?, home_z=?, home_yaw=?, home_pitch=?, flags=?, " +
                 "name=?, locked=?, island_time=?, points=?, level=?, members=?, banned=?, upgrades=?, server=?, " +
-                "has_warp=?, warp_x=?, warp_y=?, warp_z=?, warp_yaw=?, warp_pitch=?, border_color=?, bank=?, warps=?, custom_roles=?";
+                "has_warp=?, warp_x=?, warp_y=?, warp_z=?, warp_yaw=?, warp_pitch=?, border_color=?, bank=?, warps=?, custom_roles=?, " +
+                "coop=?, biome=?, block_limits=?, bank_interest_at=?";
 
         String sql = this.mysql
                 ? "INSERT INTO islands (" + columns + ") VALUES (" + placeholders + ") " +
@@ -247,6 +284,10 @@ public class SqlStorage implements Storage {
         statement.setDouble(i++, island.getBank());
         statement.setString(i++, island.serializeWarps());
         statement.setString(i++, island.serializeCustomRoles());
+        statement.setString(i++, island.serializeCoop());
+        statement.setString(i++, island.getBiome());
+        statement.setString(i++, island.serializeBlockLimits());
+        statement.setLong(i++, island.getBankInterestAt());
         return i;
     }
 
@@ -258,6 +299,116 @@ public class SqlStorage implements Storage {
         } catch (SQLException error) {
             plugin.getLogger().warning("Could not delete island " + islandId + ": " + error.getMessage());
         }
+    }
+
+    @Override
+    public synchronized void appendBankLog(UUID islandId, BankLogEntry entry) {
+        try (PreparedStatement statement = connection().prepareStatement(
+                "INSERT INTO island_bank_log (island_uuid, ts, type, actor, actor_name, amount, balance) " +
+                        "VALUES (?,?,?,?,?,?,?)")) {
+            statement.setString(1, islandId.toString());
+            statement.setLong(2, entry.getTimestamp());
+            statement.setString(3, entry.getType());
+            statement.setString(4, entry.getActor() == null ? null : entry.getActor().toString());
+            statement.setString(5, entry.getActorName());
+            statement.setDouble(6, entry.getAmount());
+            statement.setDouble(7, entry.getBalance());
+            statement.executeUpdate();
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not append bank log for " + islandId + ": " + error.getMessage());
+        }
+    }
+
+    @Override
+    public synchronized List<BankLogEntry> loadBankLog(UUID islandId, int limit) {
+        List<BankLogEntry> entries = new LinkedList<>();
+        try (PreparedStatement statement = connection().prepareStatement(
+                "SELECT ts, type, actor, actor_name, amount, balance FROM island_bank_log " +
+                        "WHERE island_uuid = ? ORDER BY ts DESC LIMIT ?")) {
+            statement.setString(1, islandId.toString());
+            statement.setInt(2, Math.max(1, limit));
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    String actorRaw = result.getString("actor");
+                    UUID actor = actorRaw == null ? null : safeUuid(actorRaw);
+                    entries.add(new BankLogEntry(
+                            result.getLong("ts"),
+                            result.getString("type"),
+                            actor,
+                            result.getString("actor_name"),
+                            result.getDouble("amount"),
+                            result.getDouble("balance")));
+                }
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not load bank log for " + islandId + ": " + error.getMessage());
+        }
+        return entries;
+    }
+
+    private UUID safeUuid(String raw) {
+        try {
+            return UUID.fromString(raw);
+        } catch (IllegalArgumentException error) {
+            return null;
+        }
+    }
+
+    @Override
+    public synchronized void saveRating(UUID islandId, UUID rater, int rating) {
+        long now = System.currentTimeMillis();
+        String sql = this.mysql
+                ? "INSERT INTO island_ratings (island_uuid, rater, rating, ts) VALUES (?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE rating=?, ts=?"
+                : "INSERT INTO island_ratings (island_uuid, rater, rating, ts) VALUES (?,?,?,?) " +
+                "ON CONFLICT(island_uuid, rater) DO UPDATE SET rating=?, ts=?";
+        try (PreparedStatement statement = connection().prepareStatement(sql)) {
+            statement.setString(1, islandId.toString());
+            statement.setString(2, rater.toString());
+            statement.setInt(3, rating);
+            statement.setLong(4, now);
+            statement.setInt(5, rating);
+            statement.setLong(6, now);
+            statement.executeUpdate();
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not save rating for " + islandId + ": " + error.getMessage());
+        }
+    }
+
+    @Override
+    public synchronized double[] loadRating(UUID islandId) {
+        try (PreparedStatement statement = connection().prepareStatement(
+                "SELECT AVG(rating) AS avg_rating, COUNT(*) AS total FROM island_ratings WHERE island_uuid = ?")) {
+            statement.setString(1, islandId.toString());
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next())
+                    return new double[]{result.getDouble("avg_rating"), result.getInt("total")};
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not load rating for " + islandId + ": " + error.getMessage());
+        }
+        return new double[]{0, 0};
+    }
+
+    @Override
+    public synchronized List<UUID> loadTopRated(int limit, int minVotes) {
+        List<UUID> ids = new LinkedList<>();
+        try (PreparedStatement statement = connection().prepareStatement(
+                "SELECT island_uuid, AVG(rating) AS avg_rating, COUNT(*) AS total FROM island_ratings " +
+                        "GROUP BY island_uuid HAVING total >= ? ORDER BY avg_rating DESC, total DESC LIMIT ?")) {
+            statement.setInt(1, Math.max(1, minVotes));
+            statement.setInt(2, Math.max(1, limit));
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    UUID id = safeUuid(result.getString("island_uuid"));
+                    if (id != null)
+                        ids.add(id);
+                }
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not load top-rated islands: " + error.getMessage());
+        }
+        return ids;
     }
 
     @Override

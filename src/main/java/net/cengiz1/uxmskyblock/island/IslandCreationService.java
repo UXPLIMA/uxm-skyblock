@@ -135,14 +135,25 @@ public class IslandCreationService {
                         if (natural) {
                             world.getChunkAt(centerX >> 4, centerZ >> 4).load(true);
                             org.bukkit.block.Block top = world.getHighestBlockAt(centerX, centerZ);
+                            int hx = centerX;
+                            int hz = centerZ;
                             int surfaceY;
                             if (top.isLiquid() || top.getY() < world.getSeaLevel()) {
-                                surfaceY = world.getSeaLevel();
-                                islandManager.buildDefaultPlatform(world, centerX, surfaceY, centerZ);
+                                int[] land = findNearbyLand(world, centerX, centerZ);
+                                if (land != null) {
+                                    hx = land[0];
+                                    hz = land[1];
+                                    surfaceY = land[2];
+                                    island.relocateCenter(hx, hz);
+                                } else {
+                                    surfaceY = world.getSeaLevel();
+                                    islandManager.buildDefaultPlatform(world, centerX, surfaceY, centerZ);
+                                }
                             } else {
                                 surfaceY = top.getY();
                             }
-                            island.setHome(centerX + 0.5, surfaceY + 1, centerZ + 0.5, 0f, 0f);
+                            island.setHome(hx + 0.5, surfaceY + 1, hz + 0.5, 0f, 0f);
+                            islandManager.saveAsync(island);
                         } else if (fallback) {
                             islandManager.buildDefaultPlatform(world, centerX, centerY, centerZ);
                         }
@@ -180,6 +191,32 @@ public class IslandCreationService {
                 this.concurrencyLimit.release();
             this.creating.remove(playerId);
         });
+    }
+
+    private int[] findNearbyLand(World world, int centerX, int centerZ) {
+        int seaLevel = world.getSeaLevel();
+        int dist = Math.max(1, settings.getIslandDistance());
+        int cellHalf = dist / 2 - 16;
+        int maxRadiusChunks = Math.max(1, Math.min(4, cellHalf / 16));
+        int ccx = centerX >> 4;
+        int ccz = centerZ >> 4;
+        for (int r = 1; r <= maxRadiusChunks; r++) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r)
+                        continue;
+                    int bx = ((ccx + dx) << 4) + 8;
+                    int bz = ((ccz + dz) << 4) + 8;
+                    if (Math.abs(bx - centerX) > cellHalf || Math.abs(bz - centerZ) > cellHalf)
+                        continue;
+                    world.getChunkAt(ccx + dx, ccz + dz).load(true);
+                    org.bukkit.block.Block top = world.getHighestBlockAt(bx, bz);
+                    if (!top.isLiquid() && top.getY() >= seaLevel)
+                        return new int[]{bx, bz, top.getY()};
+                }
+            }
+        }
+        return null;
     }
 
     public boolean isCreating(UUID playerId) {

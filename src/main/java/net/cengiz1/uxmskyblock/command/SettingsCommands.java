@@ -67,6 +67,33 @@ public class SettingsCommands extends CommandHandler {
         plugin.getMessages().send(player, "border-set", "{color}", color);
     }
 
+    public void setBiome(Player player, String biomeArg) {
+        Island island = requirePermission(player, IslandPermission.TOGGLE_SETTINGS);
+        if (island == null)
+            return;
+
+        net.cengiz1.uxmskyblock.proxy.ProxyManager proxy = plugin.getProxyManager();
+        if (proxy != null && proxy.isEnabled() && island.getServerName() != null
+                && !island.getServerName().equals(proxy.getServerName())) {
+            plugin.getMessages().send(player, "biome-wrong-server", "{server}", island.getServerName());
+            return;
+        }
+
+        if (biomeArg == null) {
+            plugin.getMessages().send(player, "biome-usage",
+                    "{list}", String.join(", ", plugin.getBiomeService().getAllowed()));
+            return;
+        }
+        String label = biomeArg.trim().toUpperCase(java.util.Locale.ROOT);
+        if (!plugin.getBiomeService().isAllowed(label)) {
+            plugin.getMessages().send(player, "biome-invalid",
+                    "{list}", String.join(", ", plugin.getBiomeService().getAllowed()));
+            return;
+        }
+        org.bukkit.block.Biome biome = plugin.getBiomeService().resolve(label);
+        plugin.getBiomeService().apply(player, island, biome, label);
+    }
+
     public void toggleLock(Player player) {
         Island island = requirePermission(player, IslandPermission.TOGGLE_SETTINGS);
         if (island == null)

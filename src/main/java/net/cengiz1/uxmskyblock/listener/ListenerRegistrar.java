@@ -34,6 +34,9 @@ public final class ListenerRegistrar {
                 plugin.getBlockValueManager(), plugin.getLevelManager()));
         register(plugin, new UpgradeEffectListener(islandManager, plugin.getUpgradeManager()));
 
+        if (plugin.getLimitManager() != null)
+            register(plugin, plugin.getLimitManager());
+
         BorderManager borderManager = new BorderManager(plugin, islandManager);
         islandManager.setBorderManager(borderManager);
         register(plugin, borderManager);

@@ -24,7 +24,7 @@ public class VisitorInteractListener implements Listener {
         if (island == null)
             return;
 
-        if (!island.isMember(event.getPlayer().getUniqueId())
+        if (!island.hasAccess(event.getPlayer().getUniqueId())
                 && !island.getFlag(IslandFlag.VISITOR_INTERACT))
             event.setCancelled(true);
     }

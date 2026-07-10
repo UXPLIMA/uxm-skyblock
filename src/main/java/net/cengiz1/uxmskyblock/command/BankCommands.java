@@ -30,6 +30,12 @@ public class BankCommands extends CommandHandler {
             return;
         }
 
+        if (action.equalsIgnoreCase("log") || action.equalsIgnoreCase("gecmis")
+                || action.equalsIgnoreCase("geçmiş") || action.equalsIgnoreCase("history")) {
+            showLog(player, island);
+            return;
+        }
+
         EconomyHook economy = plugin.getEconomy();
         if (economy == null || !economy.isEnabled()) {
             plugin.getMessages().send(player, "bank-no-economy");
@@ -63,6 +69,8 @@ public class BankCommands extends CommandHandler {
             }
             island.depositBank(amount);
             plugin.getIslandManager().saveAsync(island);
+            plugin.getBankService().logAsync(island.getUniqueId(), net.cengiz1.uxmskyblock.island.BankService.TYPE_DEPOSIT,
+                    player.getUniqueId(), player.getName(), amount, island.getBank());
             plugin.getMessages().send(player, "bank-deposit",
                     "{amount}", formatNumber(amount), "{balance}", formatNumber(island.getBank()));
             return;
@@ -82,8 +90,30 @@ public class BankCommands extends CommandHandler {
             return;
         }
         plugin.getIslandManager().saveAsync(island);
+        plugin.getBankService().logAsync(island.getUniqueId(), net.cengiz1.uxmskyblock.island.BankService.TYPE_WITHDRAW,
+                player.getUniqueId(), player.getName(), taken, island.getBank());
         plugin.getMessages().send(player, "bank-withdraw",
                 "{amount}", formatNumber(taken), "{balance}", formatNumber(island.getBank()));
+    }
+
+    private void showLog(Player player, Island island) {
+        int lines = Math.max(1, plugin.getConfig().getInt("bank.log.lines", 10));
+        plugin.getBankService().recentAsync(island.getUniqueId(), lines, entries -> {
+            if (entries.isEmpty()) {
+                plugin.getMessages().send(player, "bank-log-empty");
+                return;
+            }
+            plugin.getMessages().send(player, "bank-log-header");
+            java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd/MM HH:mm");
+            for (net.cengiz1.uxmskyblock.storage.BankLogEntry entry : entries) {
+                plugin.getMessages().send(player, "bank-log-entry",
+                        "{time}", format.format(new java.util.Date(entry.getTimestamp())),
+                        "{type}", entry.getType(),
+                        "{actor}", entry.getActorName() == null ? "-" : entry.getActorName(),
+                        "{amount}", formatNumber(entry.getAmount()),
+                        "{balance}", formatNumber(entry.getBalance()));
+            }
+        });
     }
 
     private double parseAmount(String arg) {

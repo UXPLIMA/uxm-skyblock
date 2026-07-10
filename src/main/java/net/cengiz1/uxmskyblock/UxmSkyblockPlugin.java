@@ -47,6 +47,10 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
     private EconomyHook economy;
     private ProxyManager proxyManager;
     private ModuleManager moduleManager;
+    private net.cengiz1.uxmskyblock.island.BankService bankService;
+    private net.cengiz1.uxmskyblock.island.RatingService ratingService;
+    private net.cengiz1.uxmskyblock.island.BiomeService biomeService;
+    private net.cengiz1.uxmskyblock.island.LimitManager limitManager;
 
     @Override
     public void onEnable() {
@@ -96,6 +100,11 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
         this.upgradeManager = new UpgradeManager(this);
         this.islandManager.setUpgradeManager(this.upgradeManager);
 
+        this.bankService = new net.cengiz1.uxmskyblock.island.BankService(this);
+        this.ratingService = new net.cengiz1.uxmskyblock.island.RatingService(this);
+        this.biomeService = new net.cengiz1.uxmskyblock.island.BiomeService(this);
+        this.limitManager = new net.cengiz1.uxmskyblock.island.LimitManager(this);
+
         this.menuManager = new MenuManager(this);
 
         this.proxyManager = new ProxyManager(this);
@@ -115,6 +124,11 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
 
             new IslandTimeTask(this, this.islandManager, this.settings)
                     .runTaskTimer(this, 40L, 40L);
+
+            long interestPeriod = 20L * 60L * Math.max(1,
+                    getConfig().getInt("bank.interest.check-interval-seconds", 60));
+            new net.cengiz1.uxmskyblock.island.BankInterestTask(this)
+                    .runTaskTimer(this, interestPeriod, interestPeriod);
         }
 
         this.moduleManager = new ModuleManager(this);
@@ -194,6 +208,26 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
 
     public IslandManager getIslandManager() {
         return islandManager;
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+    public net.cengiz1.uxmskyblock.island.BankService getBankService() {
+        return bankService;
+    }
+
+    public net.cengiz1.uxmskyblock.island.RatingService getRatingService() {
+        return ratingService;
+    }
+
+    public net.cengiz1.uxmskyblock.island.BiomeService getBiomeService() {
+        return biomeService;
+    }
+
+    public net.cengiz1.uxmskyblock.island.LimitManager getLimitManager() {
+        return limitManager;
     }
 
     public MenuManager getMenuManager() {

@@ -107,6 +107,59 @@ public class GeneralCommands extends CommandHandler {
                 "{next}", next < 0 ? "MAX" : formatNumber(next));
     }
 
+    public void rate(Player player, String valueArg) {
+        Island island = plugin.getIslandManager().getGoverningIsland(player.getLocation());
+        if (island == null) {
+            plugin.getMessages().send(player, "rate-not-on-island");
+            return;
+        }
+        if (island.isMember(player.getUniqueId())) {
+            plugin.getMessages().send(player, "rate-own-island");
+            return;
+        }
+        int rating;
+        try {
+            rating = Integer.parseInt(valueArg == null ? "" : valueArg.trim());
+        } catch (NumberFormatException error) {
+            plugin.getMessages().send(player, "rate-usage");
+            return;
+        }
+        if (rating < 1 || rating > 5) {
+            plugin.getMessages().send(player, "rate-usage");
+            return;
+        }
+        UUID islandOwner = island.getOwner();
+        plugin.getRatingService().rate(player.getUniqueId(), island, rating, () -> {
+            plugin.getMessages().send(player, "rate-success",
+                    "{stars}", String.valueOf(rating),
+                    "{average}", String.format(java.util.Locale.US, "%.1f", plugin.getRatingService().getAverage(island.getUniqueId())),
+                    "{count}", String.valueOf(plugin.getRatingService().getCount(island.getUniqueId())),
+                    "{owner}", nameOf(islandOwner));
+        });
+    }
+
+    public void ratingTop(Player player) {
+        int limit = Math.max(1, plugin.getConfig().getInt("rating.top-lines", 10));
+        int minVotes = Math.max(1, plugin.getConfig().getInt("rating.min-votes", 1));
+        plugin.getMessages().send(player, "rate-top-header");
+        plugin.getRatingService().topAsync(limit, minVotes, ids -> {
+            if (ids.isEmpty()) {
+                plugin.getMessages().send(player, "rate-top-empty");
+                return;
+            }
+            int rank = 1;
+            for (UUID islandId : ids) {
+                Island island = plugin.getIslandManager().getById(islandId);
+                String owner = island != null ? nameOf(island.getOwner()) : "-";
+                plugin.getMessages().send(player, "rate-top-entry",
+                        "{rank}", String.valueOf(rank++),
+                        "{owner}", owner,
+                        "{average}", String.format(java.util.Locale.US, "%.1f", plugin.getRatingService().getAverage(islandId)),
+                        "{count}", String.valueOf(plugin.getRatingService().getCount(islandId)));
+            }
+        });
+    }
+
     public void info(Player player) {
         Island island = plugin.getIslandManager().getByMember(player.getUniqueId());
         if (island == null) {

@@ -99,6 +99,10 @@ command:
     unban: ["unban", "bankaldir"]
     trust: ["trust", "güven", "guven"]
     untrust: ["untrust"]
+    coop: ["coop", "ortak"]
+    uncoop: ["uncoop", "ortakcikar", "ortakçıkar"]
+    puanla: ["rate", "puanla", "puan", "oyla"]
+    biome: ["biome", "biyom", "biom"]
     rol: ["role", "rol", "setrole"]
     ayarlar: ["settings", "ayarlar", "ayar"]
     yukseltme: ["upgrade", "yükseltme", "yukseltme", "yukselt"]
@@ -140,6 +144,77 @@ economy:
   # Require the upgrade 'required-money' (Vault) cost? Disabled automatically
   # if Vault is missing, in which case only the level requirement applies.
   enabled: true
+
+# Island bank interest and transaction log. Interest is applied ONLY by the
+# backend server that physically hosts the island, so on a proxy network the
+# balance is never credited twice.
+bank:
+  interest:
+    # Turn periodic interest on/off.
+    enabled: false
+    # Fraction of the (capped) balance added each interval. 0.02 = 2%.
+    rate: 0.02
+    # How often interest accrues, in minutes.
+    interval-minutes: 60
+    # Interest is only calculated on balance up to this cap.
+    max-balance: 1000000
+    # Balances below this earn no interest.
+    min-balance: 0
+    # How often the task wakes up to check which islands are due, in seconds.
+    check-interval-seconds: 60
+  log:
+    # How many recent transactions /island bank log shows.
+    lines: 10
+
+# Island rating (/island rate <1-5>). Ratings live in the shared database, so a
+# score given on one backend is visible on every server in the network.
+rating:
+  # How many islands /island rate top lists.
+  top-lines: 10
+  # An island needs at least this many votes to appear on the rating leaderboard.
+  min-votes: 1
+
+# Island biome (/island biome <name>). The biome is written into the world once
+# and only on the backend that hosts the island; the chosen name is stored so it
+# shows up (via %skyblock_biome%) network-wide. Applied in small batches per tick
+# so it never freezes the server.
+biome:
+  # Which biomes players may pick (must be valid 1.21.4 biome names).
+  allowed:
+    - PLAINS
+    - FOREST
+    - DESERT
+    - JUNGLE
+    - TAIGA
+    - SNOWY_TAIGA
+    - SAVANNA
+    - SWAMP
+    - BADLANDS
+    - CHERRY_GROVE
+    - MUSHROOM_FIELDS
+    - WARM_OCEAN
+  # How many 4-block columns to convert each tick. Higher = faster but heavier.
+  columns-per-tick: 256
+  # Vertical band around the island height that gets the new biome.
+  band-below: 40
+  band-above: 72
+
+# Per-island block and entity limits. Block counts are stored on the island and
+# synced across the network; entity caps are enforced live from the entities on
+# the island. A value of -1 (or an absent key) means unlimited. Optionally scale
+# every cap with an upgrade level.
+limits:
+  # Set to an upgrades.yml key to raise caps as that upgrade levels up. Empty = off.
+  upgrade-key: ""
+  upgrade-bonus-per-level: 0
+  blocks:
+    HOPPER: 64
+    SPAWNER: 8
+    BEACON: 4
+  entities:
+    VILLAGER: 20
+    IRON_GOLEM: 8
+    SNOW_GOLEM: 16
 
 # Obsidian generators. Lava that touches water turns into obsidian and the lava
 # would normally be lost. With this enabled, right-clicking an obsidian block

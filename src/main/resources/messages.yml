@@ -99,6 +99,15 @@ messages:
   trusted: "&a{player} was added to your island as a member."
   you-were-trusted: "&aYou were added to an island as a member!"
   untrusted: "&a{player} was removed from your island."
+  usage-coop: "&cUsage: /island coop <name>"
+  usage-uncoop: "&cUsage: /island uncoop <name>"
+  coop-self: "&cYou cannot coop yourself."
+  coop-added: "&a{player} now has coop access to your island."
+  coop-you-were-added: "&aYou were given coop access to {player}'s island!"
+  coop-already: "&c{player} already has coop access."
+  coop-removed: "&a{player}'s coop access was removed."
+  coop-you-were-removed: "&cYour coop access to {player}'s island was removed."
+  coop-not-cooped: "&cThat player does not have coop access."
   invalid-role: "&cInvalid role. Options: &e{roles}"
   role-set: "&a{player}'s role was set to {role}&a."
 
@@ -154,6 +163,30 @@ messages:
   bank-deposit: "&aDeposited &e{amount}&a into the island bank. Balance: &e{balance}"
   bank-withdraw: "&aWithdrew &e{amount}&a from the island bank. Balance: &e{balance}"
   bank-failed: "&cThe transaction could not be completed."
+  bank-log-empty: "&7No bank transactions yet."
+  bank-log-header: "&6&lBank transactions:"
+  bank-log-entry: "&8[{time}] &e{type} &7{actor} &8- &a{amount} &7(bal: {balance})"
+
+  # Island rating (/island rate <1-5>, /island rate top)
+  rate-usage: "&cUsage: /island rate <1-5>"
+  rate-not-on-island: "&cStand on the island you want to rate."
+  rate-own-island: "&cYou cannot rate your own island."
+  rate-success: "&aYou rated {owner}'s island &e{stars}★&a. Average: &e{average}★ &7({count} votes)"
+  rate-top-header: "&6&lTOP RATED ISLANDS"
+  rate-top-empty: "&7No rated islands yet."
+  rate-top-entry: "&7{rank}. &f{owner} &8- &e{average}★ &7({count} votes)"
+
+  # Island biome (/island biome <name>)
+  biome-usage: "&cUsage: /island biome <name>. &7Options: &e{list}"
+  biome-invalid: "&cInvalid biome. &7Options: &e{list}"
+  biome-unavailable: "&cThe island world is not available."
+  biome-in-progress: "&cA biome change is already running on this island."
+  biome-wrong-server: "&cThis island lives on server &e{server}&c. Change its biome there."
+  biome-applying: "&7Applying biome &e{biome}&7..."
+  biome-done: "&aIsland biome changed to &e{biome}&a. Re-enter the area to see it."
+
+  # Block / entity limits
+  limit-block-reached: "&cYour island reached its &e{block}&c limit ({limit})."
 
   # Time
   time-no-permission: "&cYou don't have permission to change the island time (VIP+)."

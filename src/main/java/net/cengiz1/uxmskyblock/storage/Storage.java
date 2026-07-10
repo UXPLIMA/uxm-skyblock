@@ -17,5 +17,15 @@ public interface Storage {
 
     void delete(UUID islandId);
 
+    void appendBankLog(UUID islandId, BankLogEntry entry);
+
+    java.util.List<BankLogEntry> loadBankLog(UUID islandId, int limit);
+
+    void saveRating(UUID islandId, UUID rater, int rating);
+
+    double[] loadRating(UUID islandId);
+
+    java.util.List<UUID> loadTopRated(int limit, int minVotes);
+
     void close();
 }

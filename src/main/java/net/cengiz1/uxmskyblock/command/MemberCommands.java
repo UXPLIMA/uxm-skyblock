@@ -220,6 +220,56 @@ public class MemberCommands extends CommandHandler {
         plugin.getMessages().send(target, "you-were-trusted");
     }
 
+    public void coop(Player player, String targetName) {
+        if (targetName == null) {
+            plugin.getMessages().send(player, "usage-coop");
+            return;
+        }
+        Island island = requirePermission(player, IslandPermission.INVITE);
+        if (island == null)
+            return;
+        Player target = Bukkit.getPlayerExact(targetName);
+        if (target == null) {
+            plugin.getMessages().send(player, "player-not-found", "{player}", targetName);
+            return;
+        }
+        if (target.getUniqueId().equals(player.getUniqueId())) {
+            plugin.getMessages().send(player, "coop-self");
+            return;
+        }
+        if (island.isMember(target.getUniqueId())) {
+            plugin.getMessages().send(player, "already-member");
+            return;
+        }
+        if (!island.addCoop(target.getUniqueId())) {
+            plugin.getMessages().send(player, "coop-already", "{player}", target.getName());
+            return;
+        }
+        plugin.getIslandManager().saveAsync(island);
+        plugin.getMessages().send(player, "coop-added", "{player}", target.getName());
+        plugin.getMessages().send(target, "coop-you-were-added", "{player}", player.getName());
+    }
+
+    public void uncoop(Player player, String targetName) {
+        if (targetName == null) {
+            plugin.getMessages().send(player, "usage-uncoop");
+            return;
+        }
+        Island island = requirePermission(player, IslandPermission.INVITE);
+        if (island == null)
+            return;
+        OfflinePlayer target = resolveOffline(targetName);
+        if (target == null || !island.removeCoop(target.getUniqueId())) {
+            plugin.getMessages().send(player, "coop-not-cooped");
+            return;
+        }
+        plugin.getIslandManager().saveAsync(island);
+        plugin.getMessages().send(player, "coop-removed", "{player}", target.getName());
+        Player online = target.getPlayer();
+        if (online != null)
+            plugin.getMessages().send(online, "coop-you-were-removed", "{player}", player.getName());
+    }
+
     public void untrust(Player player, String targetName) {
         if (targetName == null) {
             plugin.getMessages().send(player, "usage-untrust");

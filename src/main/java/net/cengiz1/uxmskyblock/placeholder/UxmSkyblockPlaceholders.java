@@ -64,6 +64,15 @@ public final class UxmSkyblockPlaceholders {
                 return formatNumber(island.getPoints());
             case "bank":
                 return formatNumber(island.getBank());
+            case "biome":
+                return island.getBiome() != null ? island.getBiome() : "";
+            case "rating":
+                return String.format(java.util.Locale.US, "%.1f",
+                        plugin.getRatingService().getAverage(island.getUniqueId()));
+            case "rating_count":
+                return String.valueOf(plugin.getRatingService().getCount(island.getUniqueId()));
+            case "coop":
+                return String.valueOf(island.getCoop().size());
             case "next_points": {
                 double next = plugin.getLevelManager().pointsForNextLevel(island.getLevel());
                 return next < 0 ? "MAX" : formatNumber(next);

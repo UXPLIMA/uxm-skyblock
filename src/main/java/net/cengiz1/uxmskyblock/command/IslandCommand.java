@@ -87,6 +87,8 @@ public class IslandCommand extends Command {
             case "unban":     members.unban(player, arg1); break;
             case "trust":     members.trust(player, arg1); break;
             case "untrust":   members.untrust(player, arg1); break;
+            case "coop":      members.coop(player, arg1); break;
+            case "uncoop":    members.uncoop(player, arg1); break;
             case "rol":
                 if (RoleCommands.isManagement(arg1))
                     roles.handle(player, args);
@@ -100,9 +102,17 @@ public class IslandCommand extends Command {
             case "ucus":      settings.toggleFly(player); break;
             case "kilit":     settings.toggleLock(player); break;
             case "border":    settings.setBorderColor(player, arg1); break;
+            case "biome":     settings.setBiome(player, arg1); break;
             case "block":     general.openMenu(player, "blocks"); break;
             case "bank":      bank.handle(player, arg1, arg2); break;
             case "top":       top.handle(player, arg1); break;
+            case "puanla":
+                if (arg1 != null && (arg1.equalsIgnoreCase("top") || arg1.equalsIgnoreCase("sıralama")
+                        || arg1.equalsIgnoreCase("siralama") || arg1.equalsIgnoreCase("lider")))
+                    general.ratingTop(player);
+                else
+                    general.rate(player, arg1);
+                break;
 
             case "warp":      warps.warp(player, arg1, arg2); break;
             case "setwarp":   warps.setWarp(player, arg1); break;
@@ -146,11 +156,20 @@ public class IslandCommand extends Command {
                 break;
             case "bank":
                 if (args.length == 2)
-                    addAll(result, args[1], "balance", "deposit", "withdraw");
+                    addAll(result, args[1], "balance", "deposit", "withdraw", "log");
                 break;
             case "top":
                 if (args.length == 2)
                     addAll(result, args[1], "holo");
+                break;
+            case "puanla":
+                if (args.length == 2)
+                    addAll(result, args[1], "1", "2", "3", "4", "5", "top");
+                break;
+            case "biome":
+                if (args.length == 2)
+                    for (String biome : plugin.getBiomeService().getAllowed())
+                        addIfMatch(result, args[1], biome);
                 break;
             case "setwarp":
             case "delwarp":
@@ -285,6 +304,7 @@ public class IslandCommand extends Command {
         switch (canonical) {
             case "davet": case "at": case "devret": case "ban":
             case "unban": case "trust": case "untrust": case "rol":
+            case "coop": case "uncoop":
             case "ziyaret": case "warp":
                 return true;
             default:

@@ -35,9 +35,9 @@ public class Island {
     private UUID owner;
     private final String worldName;
     private final int gridIndex;
-    private final int centerX;
+    private int centerX;
     private final int centerY;
-    private final int centerZ;
+    private int centerZ;
 
     private double homeX;
     private double homeY;
@@ -57,11 +57,15 @@ public class Island {
     private double points;
     private int level;
     private double bank;
+    private long bankInterestAt;
+    private String biome;
+    private final Map<String, Integer> blockLimits = new ConcurrentHashMap<>();
 
     private final EnumMap<IslandFlag, Boolean> flags = new EnumMap<>(IslandFlag.class);
     private final Map<UUID, String> members = new ConcurrentHashMap<>();
     private final Map<String, RoleData> customRoles = new ConcurrentHashMap<>();
     private final Set<UUID> banned = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> coop = ConcurrentHashMap.newKeySet();
     private final Map<String, Integer> upgrades = new ConcurrentHashMap<>();
     private static RoleResolver resolver;
 
@@ -102,6 +106,12 @@ public class Island {
 
     public int getGridIndex() {
         return gridIndex;
+    }
+
+    public void relocateCenter(int centerX, int centerZ) {
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.dirty = true;
     }
 
     public int getCenterX() {
@@ -567,6 +577,127 @@ public class Island {
     public void unban(UUID id) {
         if (banned.remove(id))
             this.dirty = true;
+    }
+
+    public long getBankInterestAt() {
+        return bankInterestAt;
+    }
+
+    public void setBankInterestAt(long timestamp) {
+        this.bankInterestAt = timestamp;
+        this.dirty = true;
+    }
+
+    public void setBankInterestAtRaw(long timestamp) {
+        this.bankInterestAt = timestamp;
+    }
+
+    public String getBiome() {
+        return biome;
+    }
+
+    public void setBiome(String biome) {
+        this.biome = biome;
+        this.dirty = true;
+    }
+
+    public void setBiomeRaw(String biome) {
+        this.biome = biome;
+    }
+
+    public int getBlockLimitCount(String material) {
+        return this.blockLimits.getOrDefault(material.toUpperCase(java.util.Locale.ROOT), 0);
+    }
+
+    public int addBlockLimitCount(String material, int delta) {
+        String key = material.toUpperCase(java.util.Locale.ROOT);
+        int next = Math.max(0, this.blockLimits.getOrDefault(key, 0) + delta);
+        if (next == 0)
+            this.blockLimits.remove(key);
+        else
+            this.blockLimits.put(key, next);
+        this.dirty = true;
+        return next;
+    }
+
+    public String serializeBlockLimits() {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : this.blockLimits.entrySet()) {
+            if (builder.length() > 0)
+                builder.append(';');
+            builder.append(entry.getKey()).append('=').append(entry.getValue());
+        }
+        return builder.toString();
+    }
+
+    public void loadBlockLimits(String serialized) {
+        if (serialized == null || serialized.isEmpty())
+            return;
+        for (String part : serialized.split(";")) {
+            String[] kv = part.split("=");
+            if (kv.length != 2)
+                continue;
+            try {
+                this.blockLimits.put(kv[0].toUpperCase(java.util.Locale.ROOT), Integer.parseInt(kv[1].trim()));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+    }
+
+    public boolean isCoop(UUID id) {
+        return coop.contains(id);
+    }
+
+    public boolean addCoop(UUID id) {
+        if (coop.add(id)) {
+            this.dirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeCoop(UUID id) {
+        if (coop.remove(id)) {
+            this.dirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    public Set<UUID> getCoop() {
+        return Collections.unmodifiableSet(coop);
+    }
+
+    public void clearCoop() {
+        if (!coop.isEmpty()) {
+            coop.clear();
+            this.dirty = true;
+        }
+    }
+
+    public String serializeCoop() {
+        StringBuilder builder = new StringBuilder();
+        for (UUID id : this.coop) {
+            if (builder.length() > 0)
+                builder.append(';');
+            builder.append(id);
+        }
+        return builder.toString();
+    }
+
+    public void loadCoop(String serialized) {
+        if (serialized == null || serialized.isEmpty())
+            return;
+        for (String part : serialized.split(";")) {
+            try {
+                this.coop.add(UUID.fromString(part.trim()));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+    }
+
+    public boolean hasAccess(UUID id) {
+        return isMember(id) || coop.contains(id);
     }
 
     public int getUpgradeLevel(String key) {
