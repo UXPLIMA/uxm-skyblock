@@ -159,6 +159,8 @@ public class IslandCreationService {
                         }
                         islandManager.register(island);
 
+                        fillStarterChest(world, island.getCenterX(), centerY, island.getCenterZ());
+
                         Player online = Bukkit.getPlayer(playerId);
                         if (online != null && online.isOnline()) {
                             Location home = island.getHome(world);
@@ -191,6 +193,69 @@ public class IslandCreationService {
                 this.concurrencyLimit.release();
             this.creating.remove(playerId);
         });
+    }
+
+    private void fillStarterChest(World world, int centerX, int centerY, int centerZ) {
+        if (!plugin.getConfig().getBoolean("creation.starter-chest.enabled", true))
+            return;
+        java.util.List<String> lines = plugin.getConfig().getStringList("creation.starter-chest.items");
+        if (lines.isEmpty())
+            return;
+        boolean onlyIfEmpty = plugin.getConfig().getBoolean("creation.starter-chest.only-if-empty", true);
+        int radius = Math.max(1, plugin.getConfig().getInt("creation.starter-chest.search-radius", 16));
+
+        org.bukkit.block.Block chestBlock = findChest(world, centerX, centerY, centerZ, radius);
+        if (chestBlock == null)
+            return;
+        if (!(chestBlock.getState() instanceof org.bukkit.block.Chest chest))
+            return;
+        org.bukkit.inventory.Inventory inventory = chest.getBlockInventory();
+        if (onlyIfEmpty && !isEmpty(inventory))
+            return;
+
+        for (String line : lines) {
+            org.bukkit.inventory.ItemStack item = parseItem(line);
+            if (item != null)
+                inventory.addItem(item);
+        }
+    }
+
+    private org.bukkit.block.Block findChest(World world, int centerX, int centerY, int centerZ, int radius) {
+        int minY = Math.max(world.getMinHeight(), centerY - 4);
+        int maxY = Math.min(world.getMaxHeight() - 1, centerY + radius);
+        for (int dx = -2; dx <= radius; dx++)
+            for (int dz = -2; dz <= radius; dz++)
+                for (int y = minY; y <= maxY; y++) {
+                    org.bukkit.block.Block block = world.getBlockAt(centerX + dx, y, centerZ + dz);
+                    if (block.getType() == org.bukkit.Material.CHEST
+                            || block.getType() == org.bukkit.Material.TRAPPED_CHEST)
+                        return block;
+                }
+        return null;
+    }
+
+    private boolean isEmpty(org.bukkit.inventory.Inventory inventory) {
+        for (org.bukkit.inventory.ItemStack item : inventory.getContents())
+            if (item != null && item.getType() != org.bukkit.Material.AIR)
+                return false;
+        return true;
+    }
+
+    private org.bukkit.inventory.ItemStack parseItem(String line) {
+        if (line == null || line.trim().isEmpty())
+            return null;
+        String[] parts = line.trim().split("[ :]+");
+        org.bukkit.Material material = org.bukkit.Material.matchMaterial(parts[0]);
+        if (material == null || material == org.bukkit.Material.AIR)
+            return null;
+        int amount = 1;
+        if (parts.length > 1) {
+            try {
+                amount = Math.max(1, Integer.parseInt(parts[1].trim()));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return new org.bukkit.inventory.ItemStack(material, amount);
     }
 
     private int[] findNearbyLand(World world, int centerX, int centerZ) {

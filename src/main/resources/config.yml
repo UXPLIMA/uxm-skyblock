@@ -73,6 +73,26 @@ spawn:
 creation:
   max-concurrent: 3
   threads: 3
+  # Starter chest: schematics only carry the chest BLOCK, not its items, so a new
+  # island's chest is empty. This fills the first chest found near the island
+  # center with the items below when the island is created. Format: "MATERIAL AMOUNT"
+  # (or "MATERIAL:AMOUNT"); AMOUNT defaults to 1. Invalid material names are skipped.
+  starter-chest:
+    enabled: true
+    # Only fill if the chest is empty (never overwrite an already-stocked chest).
+    only-if-empty: true
+    # How far from the island center to look for the chest.
+    search-radius: 16
+    items:
+      - "OAK_LOG 32"
+      - "ICE 2"
+      - "LAVA_BUCKET 1"
+      - "MELON_SLICE 1"
+      - "BONE_MEAL 16"
+      - "OAK_SAPLING 4"
+      - "SUGAR_CANE 3"
+      - "RED_MUSHROOM 1"
+      - "BROWN_MUSHROOM 1"
 
 # Command name, aliases and sub-command words. The left key is the internal
 # name; the list on the right is what players may type.
