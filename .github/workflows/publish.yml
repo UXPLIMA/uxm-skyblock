@@ -1,0 +1,98 @@
+name: publish
+
+# The api jar had a publication and nowhere to publish it: the block named JitPack's coordinate layout,
+# no repository was declared, so `publish` reached the local Maven cache and nothing else. uxmChunkLock and
+# uxmMinions both ask for 0.4.0, a version this repository has no tag for and JitPack answers 404 for, so
+# the only machines that could build them were the ones that had run publishToMavenLocal by hand. This
+# workflow is what makes that version real.
+on:
+  release:
+    types: [ published ]
+  # Manual publish of a version that is already tagged. The recovery path when a release run fails after
+  # the tag exists: the release event cannot be replayed, and cutting a second tag would spend a version
+  # number on an infrastructure problem.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish, without a leading v (e.g. 0.4.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# maven-releases refuses a redeploy, and it refuses it partway through rather than at the start, so two
+# publishes of one coordinate must not race.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: build & publish the api jar
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Resolve the version
+        id: ver
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            version="${{ inputs.version }}"
+          else
+            tag="${{ github.event.release.tag_name }}"
+            version="${tag#v}"
+          fi
+          if [ -z "$version" ]; then
+            echo "::error::no version to publish" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # `sh gradlew`, because the wrapper script in this repository is not executable and a checkout
+      # preserves that.
+      - name: Build and publish
+        env:
+          UXPLIMA_NEXUS_USER: ${{ secrets.UXPLIMA_NEXUS_USER }}
+          UXPLIMA_NEXUS_PASS: ${{ secrets.UXPLIMA_NEXUS_PASS }}
+        run: sh gradlew --no-daemon -PprojectVersion=${{ steps.ver.outputs.version }} build publish
+
+      # A wrong credential answers 401 loudly. A wrong url, or a publication that ends up with no
+      # artifacts, leaves the run green, so the files are read back.
+      - name: Check the artifacts reached the repository
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          base="https://repo.uxplima.com/repository/maven-releases/com/uxplima/skyblock/uxmskyblock-api/$VERSION"
+          status=0
+          for file in "uxmskyblock-api-$VERSION.jar" "uxmskyblock-api-$VERSION.pom"; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --head "$base/$file")
+            if [ "$code" = "200" ]; then
+              echo "ok: $file is served"
+            else
+              echo "::error::$base/$file answered $code, so the publish did not land"
+              status=1
+            fi
+          done
+          exit $status
+
+      # The shaded server jar is the plugin an operator installs, and it is deliberately not published to
+      # Maven: it bundles SQLite, MySQL and Jedis, which are this plugin's business and not a consumer's.
+      # The release assets are where it belongs. The glob also picks up the api jar and its sources, which
+      # is fine: a release carrying all three is a release somebody can read.
+      - name: Attach the jars to the release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          files: build/libs/uxmSkyblock-*.jar

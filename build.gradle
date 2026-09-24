@@ -5,7 +5,9 @@ plugins {
 }
 
 group 'net.cengiz1.uxmskyblock'
-version '0.4.0'
+// The published version. -PprojectVersion is how the release workflow passes the tag; the literal
+// below is what a local build and a manual publish use.
+version = project.findProperty('projectVersion') ?: '0.4.0'
 
 repositories {
     mavenCentral()
@@ -57,11 +59,40 @@ jar {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'com.github.UXPLIMA'
-            artifactId = 'uxmSkyblock'
+            // com.github.UXPLIMA:uxmSkyblock before this, which is JitPack's layout and not a coordinate
+            // anything could resolve: JitPack answers 404 for that group at every version this repository
+            // has ever carried, and there is no 0.4.0 tag for it to have built. uxmChunkLock and uxmMinions
+            // both pin 0.4.0, so both were unresolvable, and the API jar existed only on whichever machine
+            // last ran publishToMavenLocal. These are the coordinates the rest of the organisation uses:
+            // com.uxplima.<domain>, with a lower-case artifact id.
+            groupId = 'com.uxplima.skyblock'
+            artifactId = 'uxmskyblock-api'
             version = project.version
+            // The plain api jar and its sources, not from(components.java): the shaded server jar is a
+            // plugin rather than a library, and the implementation dependencies bundled into it (SQLite,
+            // MySQL, Jedis) are this plugin's business and not a consumer's.
             artifact tasks.named('jar')
             artifact tasks.named('sourcesJar')
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'uxplima-nexus'
+            // The suffix picks the target: maven-snapshots takes the timestamped layout, maven-releases
+            // refuses to overwrite a coordinate that already exists. Deciding it anywhere else means a
+            // release run that fails at the end rather than the start.
+            def snapshot = project.version.toString().endsWith('SNAPSHOT')
+            url = snapshot
+                ? 'https://repo.uxplima.com/repository/maven-snapshots/'
+                : 'https://repo.uxplima.com/repository/maven-releases/'
+            // CI exports the environment variables; a developer publishing by hand keeps the properties in
+            // ~/.gradle/gradle.properties. The property wins, so a machine whose environment already holds
+            // another account can override it.
+            credentials {
+                username = findProperty('uxplimaNexusUser') ?: System.getenv('UXPLIMA_NEXUS_USER')
+                password = findProperty('uxplimaNexusPass') ?: System.getenv('UXPLIMA_NEXUS_PASS')
+            }
         }
     }
 }
