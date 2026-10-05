@@ -90,13 +90,9 @@ jobs:
       # Maven: it bundles SQLite, MySQL and Jedis, which are this plugin's business and not a consumer's.
       # The release assets are where it belongs. The glob also picks up the api jar and its sources, which
       # is fine: a release carrying all three is a release somebody can read.
-      # The absolute URL is not decoration. Forgejo resolves every `uses:` in the job before it evaluates
-      # any `if:`, and it resolves a bare name against data.forgejo.org, which does not carry this action:
-      # run 447 died at resolution with "repository not found" while this step was one it would have
-      # skipped. A URL sends the runner to GitHub for the action and leaves the skip intact.
       - name: Attach the jars to the release
         if: github.event_name == 'release'
-        uses: https://github.com/softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
           fail_on_unmatched_files: true
           files: build/libs/uxmSkyblock-*.jar
