@@ -81,6 +81,7 @@ public class IslandCreationService {
 
         CompletableFuture<Result> result = new CompletableFuture<>();
         AtomicBoolean acquired = new AtomicBoolean(false);
+        java.util.concurrent.atomic.AtomicReference<UUID> createdId = new java.util.concurrent.atomic.AtomicReference<>();
 
         this.executor.submit(() -> {
             try {
@@ -111,6 +112,7 @@ public class IslandCreationService {
                     island.setServerNameRaw(proxy.getServerName());
 
                 this.storage.save(island);
+                createdId.set(island.getUniqueId());
 
                 if (proxy != null && proxy.isEnabled())
                     proxy.publishIslandUpdate(island.getUniqueId());
@@ -176,14 +178,17 @@ public class IslandCreationService {
                         result.complete(Result.SUCCESS);
                     } catch (Throwable error) {
                         plugin.getLogger().warning("Island finalize failed for " + playerId + ": " + error.getMessage());
+                        rollback(island.getUniqueId());
                         result.complete(Result.FAILED);
                     }
                 });
             } catch (InterruptedException error) {
                 Thread.currentThread().interrupt();
+                rollback(createdId.get());
                 result.complete(Result.FAILED);
             } catch (Throwable error) {
                 plugin.getLogger().warning("Island creation failed for " + playerId + ": " + error.getMessage());
+                rollback(createdId.get());
                 result.complete(Result.FAILED);
             }
         });
@@ -193,6 +198,17 @@ public class IslandCreationService {
                 this.concurrencyLimit.release();
             this.creating.remove(playerId);
         });
+    }
+
+    private void rollback(UUID islandId) {
+        if (islandId == null)
+            return;
+        try {
+            this.islandManager.removeFromCache(islandId);
+            this.storage.delete(islandId);
+        } catch (Throwable error) {
+            plugin.getLogger().warning("Could not roll back island " + islandId + ": " + error.getMessage());
+        }
     }
 
     private void fillStarterChest(World world, int centerX, int centerY, int centerZ) {

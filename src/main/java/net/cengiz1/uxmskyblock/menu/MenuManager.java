@@ -38,7 +38,7 @@ public class MenuManager {
 
     private static final String[] DEFAULT_MENUS = {
             "main.yml", "settings.yml", "upgrades.yml", "help.yml", "delete-confirm.yml", "warp.yml",
-            "blocks.yml", "create.yml"
+            "blocks.yml", "create.yml", "points.yml"
     };
 
     private static final Pattern FLAG_PATTERN = Pattern.compile("\\{flag_([a-zA-Z_]+)\\}");
@@ -92,6 +92,10 @@ public class MenuManager {
 
         definition.setBlockName(config.getString("block-name"));
         definition.setBlockLore(config.getStringList("block-lore"));
+
+        definition.setPointName(config.getString("point-name"));
+        definition.setPointLore(config.getStringList("point-lore"));
+        definition.setPointEmpty(config.getString("point-empty"));
 
         definition.setSchematicName(config.getString("schematic-name"));
         definition.setSchematicLore(config.getStringList("schematic-lore"));
@@ -161,6 +165,9 @@ public class MenuManager {
 
         if (definition.getType().equals("blocks"))
             populateBlocks(definition, inventory, holder);
+
+        if (definition.getType().equals("points"))
+            populatePoints(definition, inventory, holder);
 
         if (definition.getType().equals("schematics"))
             populateSchematics(definition, inventory, holder);
@@ -235,6 +242,83 @@ public class MenuManager {
             Map.Entry<Material, Double> entry = values.get(index);
             inventory.setItem(slot, buildBlockItem(definition, entry.getKey(), entry.getValue()));
         }
+    }
+
+    private record PointRow(Material material, int count, double points) {
+    }
+
+    private void populatePoints(MenuDefinition definition, Inventory inventory, MenuHolder holder) {
+        List<Integer> slots = definition.getHeadSlots();
+        Island island = holder.getIslandId() == null ? null : islandManager.getById(holder.getIslandId());
+        if (slots.isEmpty() || island == null)
+            return;
+
+        List<PointRow> rows = pointRows(island);
+        if (rows.isEmpty()) {
+            ItemStack empty = new ItemStack(Material.PAPER);
+            ItemMeta meta = empty.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(color(definition.getPointEmpty()));
+                empty.setItemMeta(meta);
+            }
+            int first = slots.get(0);
+            if (first >= 0 && first < inventory.getSize())
+                inventory.setItem(first, empty);
+            holder.setPageCount(1);
+            return;
+        }
+
+        int perPage = slots.size();
+        int pageCount = Math.max(1, (int) Math.ceil(rows.size() / (double) perPage));
+        int page = Math.min(holder.getPage(), pageCount - 1);
+        holder.setPageCount(pageCount);
+
+        int start = page * perPage;
+        for (int i = 0; i < perPage; i++) {
+            int index = start + i;
+            int slot = slots.get(i);
+            if (slot < 0 || slot >= inventory.getSize() || index >= rows.size())
+                continue;
+            inventory.setItem(slot, buildPointItem(definition, rows.get(index)));
+        }
+    }
+
+    private List<PointRow> pointRows(Island island) {
+        List<PointRow> rows = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry
+                : islandManager.getPlacedBlocks().countsByMaterial(island.getUniqueId()).entrySet()) {
+            Material material = Material.matchMaterial(entry.getKey());
+            if (material == null)
+                continue;
+            double each = plugin.getBlockValueManager().getValue(material);
+            if (each <= 0)
+                continue;
+            rows.add(new PointRow(material, entry.getValue(), each * entry.getValue()));
+        }
+        rows.sort((a, b) -> Double.compare(b.points(), a.points()));
+        return rows;
+    }
+
+    private ItemStack buildPointItem(MenuDefinition definition, PointRow row) {
+        Material icon = row.material().isItem() ? row.material() : Material.PAPER;
+        ItemStack item = new ItemStack(icon);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            String block = prettyName(row.material().name());
+            String count = String.valueOf(row.count());
+            String points = formatNumber(row.points());
+            String each = formatNumber(row.points() / row.count());
+            meta.setDisplayName(color(definition.getPointName()
+                    .replace("{block}", block).replace("{count}", count).replace("{points}", points)));
+            List<String> lore = new ArrayList<>();
+            for (String line : definition.getPointLore())
+                lore.add(color(line.replace("{block}", block).replace("{count}", count)
+                        .replace("{points}", points).replace("{each}", each)));
+            if (!lore.isEmpty())
+                meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private void populateSchematics(MenuDefinition definition, Inventory inventory, MenuHolder holder) {

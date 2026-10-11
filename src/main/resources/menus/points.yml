@@ -1,0 +1,36 @@
+# Points menu (/is level). Lists the placed blocks that give your island its points.
+# {block} = block name, {count} = blocks you placed, {points} = total points from that block,
+# {each} = points per block.
+title: "&8Puan Kaynakları"
+rows: 6
+type: points
+
+# Slots filled with one item per block type (paginated when there are more).
+head-slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
+
+point-name: "&e{block} &7x{count}"
+point-lore:
+  - "&7Toplam: &a{points} &7puan"
+  - "&7Blok başına: &f{each}"
+
+# Shown in the first slot when the island has no points yet.
+point-empty: "&7Henüz puan veren blok yok."
+
+items:
+  prev-page:
+    slot: 48
+    material: ARROW
+    name: "&eÖnceki Sayfa"
+    action: "page:prev"
+
+  back:
+    slot: 49
+    material: BARRIER
+    name: "&cKapat"
+    action: "close"
+
+  next-page:
+    slot: 50
+    material: ARROW
+    name: "&eSonraki Sayfa"
+    action: "page:next"

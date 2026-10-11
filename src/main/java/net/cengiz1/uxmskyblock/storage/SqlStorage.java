@@ -319,6 +319,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public synchronized void delete(UUID islandId) {
+        deletePlaced(islandId);
         try (PreparedStatement statement = connection().prepareStatement("DELETE FROM islands WHERE uuid = ?")) {
             statement.setString(1, islandId.toString());
             statement.executeUpdate();

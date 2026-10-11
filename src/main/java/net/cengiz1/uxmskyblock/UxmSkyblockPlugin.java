@@ -64,6 +64,8 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
         reloadConfig();
 
         this.settings = new SettingsManager(this);
+        net.cengiz1.uxmskyblock.config.ConfigValidator.report(this,
+                net.cengiz1.uxmskyblock.config.ConfigValidator.validate(this));
         this.messages = new MessageManager(this);
 
         try {
@@ -184,6 +186,8 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
     public void reloadAll() {
         reloadConfig();
         this.settings.reload();
+        net.cengiz1.uxmskyblock.config.ConfigValidator.report(this,
+                net.cengiz1.uxmskyblock.config.ConfigValidator.validate(this));
         this.messages.reload();
         this.blockValueManager.reload();
         this.levelManager.reload();

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public class ProxyMessage {
 
+    public static final int PROTOCOL_VERSION = 1;
+
     private final MessageType type;
     private final String origin;
     private final String island;
@@ -41,6 +43,7 @@ public class ProxyMessage {
 
     public String serialize() {
         JsonObject object = new JsonObject();
+        object.addProperty("v", PROTOCOL_VERSION);
         object.addProperty("type", type.name());
         object.addProperty("origin", origin);
         if (island != null)
@@ -51,6 +54,8 @@ public class ProxyMessage {
     public static ProxyMessage parse(String raw) {
         try {
             JsonObject object = JsonParser.parseString(raw).getAsJsonObject();
+            if (object.has("v") && object.get("v").getAsInt() > PROTOCOL_VERSION)
+                return null;
             MessageType type = MessageType.fromString(object.has("type") ? object.get("type").getAsString() : null);
             if (type == null)
                 return null;

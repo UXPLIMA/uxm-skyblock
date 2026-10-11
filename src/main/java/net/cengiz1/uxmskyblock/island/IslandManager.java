@@ -52,6 +52,12 @@ public class IslandManager {
         this.creationService = new IslandCreationService(plugin, settings, storage, worldManager, this, this.schematicService);
     }
 
+    private final net.cengiz1.uxmskyblock.level.PlacedBlocks placedBlocks = new net.cengiz1.uxmskyblock.level.PlacedBlocks();
+
+    public net.cengiz1.uxmskyblock.level.PlacedBlocks getPlacedBlocks() {
+        return placedBlocks;
+    }
+
     public void loadAll() {
         int highestIndex = -1;
         for (Island island : this.storage.loadAll()) {
@@ -61,6 +67,7 @@ public class IslandManager {
             if (island.getGridIndex() > highestIndex)
                 highestIndex = island.getGridIndex();
         }
+        this.placedBlocks.load(this.storage.loadAllPlaced());
         this.grid.setNextIndex(highestIndex + 1);
         plugin.getLogger().info("Loaded " + this.islandsById.size() + " islands.");
     }
@@ -249,6 +256,7 @@ public class IslandManager {
         Bukkit.getPluginManager().callEvent(new net.cengiz1.uxmskyblock.event.IslandDeleteEvent(island));
 
         this.islandsById.remove(island.getUniqueId());
+        this.placedBlocks.forget(island.getUniqueId());
         this.ownerToIsland.remove(island.getOwner());
 
         World world = this.worldManager.getWorld();

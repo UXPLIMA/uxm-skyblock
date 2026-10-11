@@ -3,6 +3,7 @@ package net.cengiz1.uxmskyblock.level;
 import net.cengiz1.uxmskyblock.UxmSkyblockPlugin;
 import net.cengiz1.uxmskyblock.island.Island;
 import net.cengiz1.uxmskyblock.island.IslandManager;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -105,6 +105,32 @@ public class GeneralCommands extends CommandHandler {
                 "{level}", String.valueOf(island.getLevel()),
                 "{points}", formatNumber(island.getPoints()),
                 "{next}", next < 0 ? "MAX" : formatNumber(next));
+        showPointSources(player, island);
+    }
+
+    private void showPointSources(Player player, Island island) {
+        record Row(String label, double points) {
+        }
+        java.util.List<Row> rows = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, Integer> entry
+                : plugin.getIslandManager().getPlacedBlocks().countsByMaterial(island.getUniqueId()).entrySet()) {
+            org.bukkit.Material material = org.bukkit.Material.matchMaterial(entry.getKey());
+            if (material == null)
+                continue;
+            double points = plugin.getBlockValueManager().getValue(material) * entry.getValue();
+            if (points > 0)
+                rows.add(new Row(entry.getKey() + " x" + entry.getValue(), points));
+        }
+        rows.sort((a, b) -> Double.compare(b.points(), a.points()));
+
+        player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&', "&8--- &6Puan kaynakları &8---"));
+        if (rows.isEmpty()) {
+            player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&', "&7Henüz puan veren blok yok."));
+            return;
+        }
+        for (Row row : rows.subList(0, Math.min(5, rows.size())))
+            player.sendMessage(org.bukkit.ChatColor.translateAlternateColorCodes('&',
+                    "&7- &f" + row.label() + " &7= &a" + formatNumber(row.points())));
     }
 
     public void rate(Player player, String valueArg) {

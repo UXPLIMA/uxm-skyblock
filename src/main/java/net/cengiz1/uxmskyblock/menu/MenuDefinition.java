@@ -47,6 +47,10 @@ public class MenuDefinition {
     private String blockName = "&e{block}";
     private List<String> blockLore = new ArrayList<>();
 
+    private String pointName = "&e{block} &7x{count}";
+    private List<String> pointLore = new ArrayList<>();
+    private String pointEmpty = "&7Henüz puan veren blok yok.";
+
     private String schematicName = "&a{name}";
     private List<String> schematicLore = new ArrayList<>();
 
@@ -131,6 +135,33 @@ public class MenuDefinition {
     public void setMemberFormat(String memberFormat) {
         if (memberFormat != null)
             this.memberFormat = memberFormat;
+    }
+
+    public String getPointName() {
+        return pointName;
+    }
+
+    public void setPointName(String pointName) {
+        if (pointName != null && !pointName.isEmpty())
+            this.pointName = pointName;
+    }
+
+    public List<String> getPointLore() {
+        return pointLore;
+    }
+
+    public void setPointLore(List<String> pointLore) {
+        if (pointLore != null && !pointLore.isEmpty())
+            this.pointLore = pointLore;
+    }
+
+    public String getPointEmpty() {
+        return pointEmpty;
+    }
+
+    public void setPointEmpty(String pointEmpty) {
+        if (pointEmpty != null && !pointEmpty.isEmpty())
+            this.pointEmpty = pointEmpty;
     }
 
     public String getBlockName() {
