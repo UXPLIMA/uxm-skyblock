@@ -12,6 +12,7 @@ public class LevelManager {
     private final UxmSkyblockPlugin plugin;
 
     private final TreeMap<Integer, Double> requirements = new TreeMap<>();
+    private final java.util.List<Double> thresholds = new java.util.ArrayList<>();
     private int maxDefinedLevel;
     private boolean autoEnabled;
     private double autoStep;
@@ -49,9 +50,10 @@ public class LevelManager {
         this.autoEnabled = config.getBoolean("auto.enabled", true);
         this.autoStep = config.getDouble("auto.step", 5000);
         this.autoMultiplier = config.getDouble("auto.multiplier", 1.15);
+        buildThresholds();
     }
 
-    public double requiredPoints(int level) {
+    private double computeRequired(int level) {
         if (level <= 0)
             return 0;
         Double explicit = this.requirements.get(level);
@@ -71,14 +73,29 @@ public class LevelManager {
         return total;
     }
 
+    private void buildThresholds() {
+        this.thresholds.clear();
+        this.thresholds.add(0.0);
+        for (int level = 1; level <= LEVEL_CAP; level++) {
+            double needed = computeRequired(level);
+            if (needed == Double.MAX_VALUE)
+                break;
+            this.thresholds.add(needed);
+            if (Double.isInfinite(needed))
+                break;
+        }
+    }
+
+    public double requiredPoints(int level) {
+        if (level <= 0)
+            return 0;
+        return level < this.thresholds.size() ? this.thresholds.get(level) : Double.MAX_VALUE;
+    }
+
     public int levelFromPoints(double points) {
         int level = 0;
-        while (level < LEVEL_CAP) {
-            double needed = requiredPoints(level + 1);
-            if (needed == Double.MAX_VALUE || points < needed)
-                break;
+        while (level + 1 < this.thresholds.size() && points >= this.thresholds.get(level + 1))
             level++;
-        }
         return level;
     }
 

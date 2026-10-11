@@ -264,7 +264,7 @@ public class ProxyManager {
                 Island island = plugin.getIslandManager().getById(islandId);
                 if (online != null && online.isOnline() && island != null) {
                     plugin.getMessages().send(online, "warping", "{player}",
-                            org.bukkit.Bukkit.getOfflinePlayer(island.getOwner()).getName());
+                            net.cengiz1.uxmskyblock.util.PlayerNames.nameOf(island.getOwner()));
                     plugin.getIslandManager().teleportToWarp(online, island, warpName);
                 }
             }, 20L);

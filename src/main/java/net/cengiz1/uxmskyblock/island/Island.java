@@ -45,7 +45,7 @@ public class Island {
     private float homeYaw;
     private float homePitch;
 
-    private final Map<String, WarpPoint> warps = new LinkedHashMap<>();
+    private final Map<String, WarpPoint> warps = Collections.synchronizedMap(new LinkedHashMap<>());
 
     private String name;
     private boolean locked;
@@ -61,7 +61,7 @@ public class Island {
     private String biome;
     private final Map<String, Integer> blockLimits = new ConcurrentHashMap<>();
 
-    private final EnumMap<IslandFlag, Boolean> flags = new EnumMap<>(IslandFlag.class);
+    private final Map<IslandFlag, Boolean> flags = Collections.synchronizedMap(new EnumMap<>(IslandFlag.class));
     private final Map<UUID, String> members = new ConcurrentHashMap<>();
     private final Map<String, RoleData> customRoles = new ConcurrentHashMap<>();
     private final Set<UUID> banned = ConcurrentHashMap.newKeySet();
@@ -254,13 +254,19 @@ public class Island {
         return p == null ? 0 : p.pitch;
     }
 
+    private static <K, V> Map<K, V> snapshot(Map<K, V> source) {
+        synchronized (source) {
+            return new LinkedHashMap<>(source);
+        }
+    }
+
     private static String key(String name) {
         return name == null ? "" : name.trim().toLowerCase(java.util.Locale.ROOT);
     }
 
     public String serializeWarps() {
         StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, WarpPoint> entry : this.warps.entrySet()) {
+        for (Map.Entry<String, WarpPoint> entry : snapshot(this.warps).entrySet()) {
             if (builder.length() > 0)
                 builder.append(';');
             WarpPoint p = entry.getValue();
@@ -715,7 +721,7 @@ public class Island {
 
     public String serializeFlags() {
         StringBuilder builder = new StringBuilder();
-        for (Map.Entry<IslandFlag, Boolean> entry : this.flags.entrySet()) {
+        for (Map.Entry<IslandFlag, Boolean> entry : snapshot(this.flags).entrySet()) {
             if (builder.length() > 0)
                 builder.append(';');
             builder.append(entry.getKey().name()).append('=').append(entry.getValue() ? 1 : 0);

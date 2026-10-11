@@ -21,10 +21,7 @@ public class RatingService {
     }
 
     private void refreshCache() {
-        for (Island island : plugin.getIslandManager().getAllIslands()) {
-            double[] value = plugin.getStorage().loadRating(island.getUniqueId());
-            cache.put(island.getUniqueId(), value);
-        }
+        cache.putAll(plugin.getStorage().loadAllRatings());
     }
 
     public double getAverage(UUID islandId) {

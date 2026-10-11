@@ -372,6 +372,34 @@ public class IslandManager {
         });
     }
 
+    private final java.util.Set<UUID> dirtyIslands = ConcurrentHashMap.newKeySet();
+
+    public void markDirty(Island island) {
+        this.dirtyIslands.add(island.getUniqueId());
+    }
+
+    public void startDirtyFlusher(long periodTicks) {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::flushDirty, periodTicks, periodTicks);
+    }
+
+    private void flushDirty() {
+        if (this.dirtyIslands.isEmpty())
+            return;
+        java.util.List<Island> batch = new java.util.ArrayList<>();
+        for (UUID id : this.dirtyIslands) {
+            if (this.dirtyIslands.remove(id)) {
+                Island island = this.islandsById.get(id);
+                if (island != null)
+                    batch.add(island);
+            }
+        }
+        for (Island island : batch) {
+            this.storage.save(island);
+            if (this.proxyManager != null && this.proxyManager.isEnabled())
+                this.proxyManager.queueIslandSync(island.getUniqueId());
+        }
+    }
+
     public void shutdown() {
         this.creationService.shutdown();
         saveAll();

@@ -254,7 +254,7 @@ public class IslandCommand extends Command {
     private Island islandOfOwnerName(String name) {
         OfflinePlayer target = Bukkit.getPlayerExact(name);
         if (target == null) {
-            OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
+            OfflinePlayer offline = net.cengiz1.uxmskyblock.util.PlayerNames.offline(name);
             target = offline.hasPlayedBefore() ? offline : null;
         }
         return target == null ? null : plugin.getIslandManager().getByOwner(target.getUniqueId());

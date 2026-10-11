@@ -153,7 +153,7 @@ public class TopHologramManager implements Listener {
     }
 
     private String ownerName(Island island) {
-        String name = Bukkit.getOfflinePlayer(island.getOwner()).getName();
+        String name = net.cengiz1.uxmskyblock.util.PlayerNames.nameOf(island.getOwner());
         return name != null ? name : island.getOwner().toString().substring(0, 8);
     }
 

@@ -5,8 +5,10 @@ import net.cengiz1.uxmskyblock.island.IslandFlag;
 import net.cengiz1.uxmskyblock.island.IslandManager;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class ExplosionListener implements Listener {
@@ -24,10 +26,17 @@ public class ExplosionListener implements Listener {
             return;
 
         boolean creeper = event.getEntity() instanceof Creeper;
-        boolean tnt = event.getEntity() instanceof TNTPrimed;
+        boolean tnt = event.getEntity() instanceof TNTPrimed || event.getEntity() instanceof ExplosiveMinecart;
 
         if ((creeper && !island.getFlag(IslandFlag.CREEPER_EXPLOSION))
                 || (tnt && !island.getFlag(IslandFlag.TNT_EXPLOSION)))
+            event.blockList().clear();
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent event) {
+        Island island = islandManager.getIslandAt(event.getBlock().getLocation());
+        if (island != null && !island.getFlag(IslandFlag.TNT_EXPLOSION))
             event.blockList().clear();
     }
 }

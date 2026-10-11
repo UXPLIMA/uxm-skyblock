@@ -90,10 +90,7 @@ public class RedisMessenger {
 
     public String takeValue(String key) {
         try (Jedis jedis = pool.getResource()) {
-            String value = jedis.get(key);
-            if (value != null)
-                jedis.del(key);
-            return value;
+            return jedis.getDel(key);
         } catch (Throwable error) {
             logger.warning("Redis get/del failed (" + key + "): " + error.getMessage());
             return null;

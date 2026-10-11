@@ -659,7 +659,7 @@ public class MenuManager {
     }
 
     private String nameOf(UUID id) {
-        String name = Bukkit.getOfflinePlayer(id).getName();
+        String name = net.cengiz1.uxmskyblock.util.PlayerNames.nameOf(id);
         return name != null ? name : id.toString().substring(0, 8);
     }
 

@@ -27,5 +27,7 @@ public interface Storage {
 
     java.util.List<UUID> loadTopRated(int limit, int minVotes);
 
+    java.util.Map<UUID, double[]> loadAllRatings();
+
     void close();
 }

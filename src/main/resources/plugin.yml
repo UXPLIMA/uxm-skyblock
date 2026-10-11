@@ -1,5 +1,5 @@
 name: uxmSkyblock
-version: 0.4.0
+version: '${version}'
 main: net.cengiz1.uxmskyblock.UxmSkyblockPlugin
 api-version: 1.21
 author: cengiz1x

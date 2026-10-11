@@ -4,24 +4,19 @@ import net.cengiz1.uxmskyblock.UxmSkyblockPlugin;
 import net.cengiz1.uxmskyblock.island.Island;
 import net.cengiz1.uxmskyblock.island.IslandManager;
 import net.cengiz1.uxmskyblock.island.IslandPermission;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-
-/**
- * Right-click an obsidian block with an empty bucket to break it and get the
- * lava back as a lava bucket, so lava is never wasted when running an obsidian
- * generator. On an island the player must be allowed to break blocks.
- */
 public class ObsidianBucketListener implements Listener {
 
     private final UxmSkyblockPlugin plugin;
@@ -47,23 +42,32 @@ public class ObsidianBucketListener implements Listener {
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand.getType() != Material.BUCKET)
             return;
+
         Island island = islandManager.getIslandAt(block.getLocation());
         if (island != null && !island.hasPermission(player.getUniqueId(), IslandPermission.BLOCK_BREAK))
             return;
 
+        BlockBreakEvent breakEvent = new BlockBreakEvent(block, player);
+        Bukkit.getPluginManager().callEvent(breakEvent);
+        if (breakEvent.isCancelled())
+            return;
+
         event.setCancelled(true);
         block.setType(Material.AIR);
-
-        ItemStack lavaBucket = new ItemStack(Material.LAVA_BUCKET);
-        if (hand.getAmount() <= 1) {
-            player.getInventory().setItemInMainHand(lavaBucket);
-        } else {
-            hand.setAmount(hand.getAmount() - 1);
-            Map<Integer, ItemStack> overflow = player.getInventory().addItem(lavaBucket);
-            for (ItemStack leftover : overflow.values())
-                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
-        }
-
+        giveLavaBucket(player, hand);
         player.playSound(player.getLocation(), Sound.ITEM_BUCKET_FILL_LAVA, 1.0f, 1.0f);
+    }
+
+    private void giveLavaBucket(Player player, ItemStack hand) {
+        ItemStack lava = new ItemStack(Material.LAVA_BUCKET);
+        if (hand.getAmount() <= 1) {
+            player.getInventory().setItemInMainHand(lava);
+            return;
+        }
+        ItemStack remaining = hand.clone();
+        remaining.setAmount(hand.getAmount() - 1);
+        player.getInventory().setItemInMainHand(remaining);
+        for (ItemStack leftover : player.getInventory().addItem(lava).values())
+            player.getWorld().dropItemNaturally(player.getLocation(), leftover);
     }
 }

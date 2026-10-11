@@ -83,6 +83,7 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
 
         this.islandManager = new IslandManager(this, this.settings, this.storage, this.worldManager);
         this.islandManager.loadAll();
+        this.islandManager.startDirtyFlusher(100L);
 
         this.dimensionManager = new net.cengiz1.uxmskyblock.world.DimensionManager(
                 this.settings, this.worldManager, this.islandManager.getSchematicService());
@@ -97,6 +98,7 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
         this.topService = new net.cengiz1.uxmskyblock.island.TopService(this);
 
         this.economy = setupEconomy();
+        getServer().getPluginManager().registerEvents(new net.cengiz1.uxmskyblock.economy.EconomyWatcher(this), this);
         this.upgradeManager = new UpgradeManager(this);
         this.islandManager.setUpgradeManager(this.upgradeManager);
 
@@ -268,6 +270,10 @@ public final class UxmSkyblockPlugin extends JavaPlugin {
 
     public net.cengiz1.uxmskyblock.island.TopHologramManager getTopHologramManager() {
         return topHologramManager;
+    }
+
+    public void setEconomy(EconomyHook hook) {
+        this.economy = hook;
     }
 
     public EconomyHook getEconomy() {

@@ -288,7 +288,7 @@ public final class UxmSkyblockPlaceholders {
     }
 
     private static String nameOf(Island island) {
-        String name = Bukkit.getOfflinePlayer(island.getOwner()).getName();
+        String name = net.cengiz1.uxmskyblock.util.PlayerNames.nameOf(island.getOwner());
         return name != null ? name : island.getOwner().toString().substring(0, 8);
     }
 

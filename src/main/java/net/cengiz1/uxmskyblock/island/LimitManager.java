@@ -60,7 +60,7 @@ public class LimitManager implements Listener {
             return;
         }
         island.addBlockLimitCount(material, 1);
-        plugin.getIslandManager().saveAsync(island);
+        plugin.getIslandManager().markDirty(island);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -73,7 +73,7 @@ public class LimitManager implements Listener {
             return;
         if (island.getBlockLimitCount(material) > 0) {
             island.addBlockLimitCount(material, -1);
-            plugin.getIslandManager().saveAsync(island);
+            plugin.getIslandManager().markDirty(island);
         }
     }
 
@@ -94,19 +94,19 @@ public class LimitManager implements Listener {
     }
 
     private int countEntities(Island island, EntityType type) {
-        Location center = island.getCenter(plugin.getWorldManager().getWorld());
-        if (center.getWorld() == null)
+        org.bukkit.World world = plugin.getWorldManager().getWorld();
+        if (world == null)
             return 0;
         int half = plugin.getIslandManager().getProtectionHalf(island);
+        int cx = island.getCenterX();
+        int cz = island.getCenterZ();
+        org.bukkit.util.BoundingBox area = new org.bukkit.util.BoundingBox(
+                cx - half, world.getMinHeight(), cz - half,
+                cx + half + 1, world.getMaxHeight(), cz + half + 1);
         int count = 0;
-        for (Entity entity : center.getWorld().getEntities()) {
-            if (entity.getType() != type)
-                continue;
-            Location loc = entity.getLocation();
-            if (Math.abs(loc.getBlockX() - island.getCenterX()) <= half
-                    && Math.abs(loc.getBlockZ() - island.getCenterZ()) <= half)
+        for (Entity entity : world.getNearbyEntities(area))
+            if (entity.getType() == type)
                 count++;
-        }
         return count;
     }
 }

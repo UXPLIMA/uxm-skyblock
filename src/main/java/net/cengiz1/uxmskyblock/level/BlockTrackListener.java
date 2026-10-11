@@ -55,6 +55,6 @@ public class BlockTrackListener implements Listener {
             }
         }
 
-        this.islandManager.saveAsync(island);
+        this.islandManager.markDirty(island);
     }
 }

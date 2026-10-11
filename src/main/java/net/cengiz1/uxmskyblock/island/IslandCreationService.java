@@ -223,8 +223,8 @@ public class IslandCreationService {
     private org.bukkit.block.Block findChest(World world, int centerX, int centerY, int centerZ, int radius) {
         int minY = Math.max(world.getMinHeight(), centerY - 4);
         int maxY = Math.min(world.getMaxHeight() - 1, centerY + radius);
-        for (int dx = -2; dx <= radius; dx++)
-            for (int dz = -2; dz <= radius; dz++)
+        for (int dx = -radius; dx <= radius; dx++)
+            for (int dz = -radius; dz <= radius; dz++)
                 for (int y = minY; y <= maxY; y++) {
                     org.bukkit.block.Block block = world.getBlockAt(centerX + dx, y, centerZ + dz);
                     if (block.getType() == org.bukkit.Material.CHEST
@@ -291,7 +291,7 @@ public class IslandCreationService {
     public void shutdown() {
         this.executor.shutdown();
         try {
-            if (!this.executor.awaitTermination(10, TimeUnit.SECONDS))
+            if (!this.executor.awaitTermination(3, TimeUnit.SECONDS))
                 this.executor.shutdownNow();
         } catch (InterruptedException error) {
             Thread.currentThread().interrupt();

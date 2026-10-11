@@ -7,10 +7,12 @@ import net.cengiz1.uxmskyblock.island.IslandTime;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,11 +89,7 @@ public class SqlStorage implements Storage {
                         "balance DOUBLE NOT NULL)")) {
             statement.executeUpdate();
         }
-        try (PreparedStatement statement = this.connection.prepareStatement(
-                "CREATE INDEX IF NOT EXISTS idx_bank_log_island ON island_bank_log (island_uuid, ts)")) {
-            statement.executeUpdate();
-        } catch (SQLException ignored) {
-        }
+        createIndexIfMissing("island_bank_log", "idx_bank_log_island", "island_uuid, ts");
 
         try (PreparedStatement statement = this.connection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS island_ratings (" +
@@ -104,13 +102,40 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void addColumnIfMissing(String column, String type) {
-        try (PreparedStatement statement = this.connection.prepareStatement(
-                "ALTER TABLE islands ADD COLUMN " + column + " " + type)) {
-            statement.executeUpdate();
-        } catch (SQLException ignored) {
-
+    private void addColumnIfMissing(String column, String type) throws SQLException {
+        if (columnExists("islands", column))
+            return;
+        try (Statement statement = connection().createStatement()) {
+            statement.executeUpdate("ALTER TABLE islands ADD COLUMN " + column + " " + type);
         }
+    }
+
+    private void createIndexIfMissing(String table, String index, String columns) throws SQLException {
+        if (indexExists(table, index))
+            return;
+        try (Statement statement = connection().createStatement()) {
+            statement.executeUpdate("CREATE INDEX " + index + " ON " + table + " (" + columns + ")");
+        }
+    }
+
+    private boolean columnExists(String table, String column) throws SQLException {
+        DatabaseMetaData meta = connection().getMetaData();
+        try (ResultSet result = meta.getColumns(connection().getCatalog(), null, table, null)) {
+            while (result.next())
+                if (column.equalsIgnoreCase(result.getString("COLUMN_NAME")))
+                    return true;
+        }
+        return false;
+    }
+
+    private boolean indexExists(String table, String index) throws SQLException {
+        DatabaseMetaData meta = connection().getMetaData();
+        try (ResultSet result = meta.getIndexInfo(connection().getCatalog(), null, table, false, false)) {
+            while (result.next())
+                if (index.equalsIgnoreCase(result.getString("INDEX_NAME")))
+                    return true;
+        }
+        return false;
     }
 
     private void openConnection() throws SQLException {
@@ -125,7 +150,8 @@ public class SqlStorage implements Storage {
 
         if (this.mysql) {
             String url = "jdbc:mysql://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabase()
-                    + "?useSSL=" + settings.isUseSsl() + "&autoReconnect=true&characterEncoding=utf8";
+                    + "?sslMode=" + (settings.isUseSsl() ? "REQUIRED" : "DISABLED") +
+                    "&autoReconnect=true&characterEncoding=utf8";
             this.connection = DriverManager.getConnection(url, settings.getUsername(), settings.getPassword());
         } else {
             File file = new File(plugin.getDataFolder(), "data.db");
@@ -409,6 +435,23 @@ public class SqlStorage implements Storage {
             plugin.getLogger().warning("Could not load top-rated islands: " + error.getMessage());
         }
         return ids;
+    }
+
+    @Override
+    public synchronized java.util.Map<UUID, double[]> loadAllRatings() {
+        java.util.Map<UUID, double[]> result = new java.util.HashMap<>();
+        try (PreparedStatement statement = connection().prepareStatement(
+                "SELECT island_uuid, AVG(rating) AS avg_rating, COUNT(*) AS total FROM island_ratings GROUP BY island_uuid");
+             ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                UUID id = safeUuid(rs.getString("island_uuid"));
+                if (id != null)
+                    result.put(id, new double[]{rs.getDouble("avg_rating"), rs.getInt("total")});
+            }
+        } catch (SQLException error) {
+            plugin.getLogger().warning("Could not load ratings: " + error.getMessage());
+        }
+        return result;
     }
 
     @Override

@@ -120,7 +120,10 @@ public class BankCommands extends CommandHandler {
         if (arg == null)
             return -1;
         try {
-            return Double.parseDouble(arg.trim().replace(",", "."));
+            double value = Double.parseDouble(arg.trim().replace(",", "."));
+            if (!Double.isFinite(value))
+                return -1;
+            return Math.floor(value * 100) / 100.0;
         } catch (NumberFormatException error) {
             return -1;
         }

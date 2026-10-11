@@ -36,12 +36,12 @@ public abstract class CommandHandler {
         Player online = Bukkit.getPlayerExact(name);
         if (online != null)
             return online;
-        OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
+        OfflinePlayer offline = net.cengiz1.uxmskyblock.util.PlayerNames.offline(name);
         return offline.hasPlayedBefore() ? offline : null;
     }
 
     protected String nameOf(UUID id) {
-        String name = Bukkit.getOfflinePlayer(id).getName();
+        String name = net.cengiz1.uxmskyblock.util.PlayerNames.nameOf(id);
         return name != null ? name : id.toString().substring(0, 8);
     }
 
