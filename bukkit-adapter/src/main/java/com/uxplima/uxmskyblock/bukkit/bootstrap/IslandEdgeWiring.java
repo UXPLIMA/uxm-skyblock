@@ -101,12 +101,18 @@ final class IslandEdgeWiring {
             moveTheWalls(moved);
         }));
         // Who belongs to an island and what each role may do are read from the island the protection index holds, so
-        // the index holds the island as it is written now, read off the thread the change finished on.
+        // the index holds the island as it is written now, read off the thread the change finished on. The read and
+        // the swap happen inside the lock every change to the island takes, so two rereads never land out of order
+        // and leave a removed member holding the island.
         java.util.function.Consumer<com.uxplima.uxmskyblock.core.domain.identity.IslandId> reread =
                 islandId -> scheduler.async(() -> persistence
-                        .islandStoragePort()
-                        .findIslandById(islandId)
-                        .ifPresent(protectionListener.spatialIndex()::refresh));
+                        .islandMutationLock()
+                        .inside(
+                                islandId,
+                                () -> persistence
+                                        .islandStoragePort()
+                                        .findIslandById(islandId)
+                                        .ifPresent(protectionListener.spatialIndex()::refresh)));
         membershipService.whenMembersChanged(reread);
         membershipService.whenRolesChanged(reread);
         membershipService.whenMembersChanged(islandId -> {
