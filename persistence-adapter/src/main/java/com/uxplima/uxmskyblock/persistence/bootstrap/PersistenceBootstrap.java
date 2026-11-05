@@ -367,9 +367,16 @@ public final class PersistenceBootstrap extends FeatureAdapters implements AutoC
     public void registerProfile(PlayerUuid playerUuid, ProfileId profileId) {
         Objects.requireNonNull(playerUuid, "playerUuid");
         Objects.requireNonNull(profileId, "profileId");
+        // A profile belongs to an account, so the account row comes first, as it does at a first login.
         try (java.sql.Connection conn = database.connection();
+                java.sql.PreparedStatement account =
+                        conn.prepareStatement("INSERT INTO player_accounts (player_uuid) SELECT ? WHERE NOT EXISTS"
+                                + " (SELECT 1 FROM player_accounts WHERE player_uuid = ?)");
                 java.sql.PreparedStatement ps = conn.prepareStatement(
                         "INSERT INTO player_profiles (profile_id, player_uuid, profile_type) VALUES (?, ?, 'CLASSIC')")) {
+            account.setString(1, playerUuid.value().toString());
+            account.setString(2, playerUuid.value().toString());
+            account.executeUpdate();
             ps.setString(1, profileId.value().toString());
             ps.setString(2, playerUuid.value().toString());
             ps.executeUpdate();
