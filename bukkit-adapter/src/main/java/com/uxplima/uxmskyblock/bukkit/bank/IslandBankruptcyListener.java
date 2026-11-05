@@ -323,6 +323,6 @@ public final class IslandBankruptcyListener implements Listener, ArrivalGate {
     }
 
     private boolean hasBypassPermission(Player player) {
-        return player.isOp() || player.hasPermission("uxmskyblock.admin.bypass");
+        return player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node());
     }
 }

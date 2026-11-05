@@ -14,6 +14,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 
 /** The pages of {@code /is help}, split out of {@link IslandCommandTree} so the tree stays the size the standards allow. */
@@ -43,22 +44,22 @@ final class HelpPages {
      * still printed as the shipped one. Each line is now drawn from the command the server registered,
      * with its words from the reader's catalogue.
      */
-    int show(
-            CommandSourceStack source,
-            int page,
-            String rootWord,
-            List<ConfiguredCommandTree.Branch<CommandSourceStack>> helpBranches) {
+    int show(CommandSourceStack source, int page, String rootWord, List<ConfiguredCommandTree.Branch> helpBranches) {
         CommandSender sender = source.getSender();
-        List<ConfiguredCommandTree.Branch<CommandSourceStack>> usable = new ArrayList<>();
+        List<ConfiguredCommandTree.Branch> usable = new ArrayList<>();
         String helpWord = "help";
-        for (ConfiguredCommandTree.Branch<CommandSourceStack> branch : helpBranches) {
+        for (ConfiguredCommandTree.Branch branch : helpBranches) {
             if (branch.key().equals("help")) {
                 helpWord = branch.name();
             }
             // A branch with no help words is not listed. The catalogue gives none to a second word
             // for another branch, such as chest for the vault, so a command is one line.
+            // A gate's requirement always passes so the parser never refuses; whether the sender may use
+            // the branch is the gate's to say.
             if (messages.has("help.commands." + branch.key() + ".description")
-                    && branch.requirement().test(source)) {
+                    && (branch.requirement() instanceof Gate gate
+                            ? gate.shows(sender)
+                            : branch.requirement().test(source))) {
                 usable.add(branch);
             }
         }
@@ -69,7 +70,7 @@ final class HelpPages {
                 "help.header",
                 Placeholder.unparsed("page", Integer.toString(shown)),
                 Placeholder.unparsed("pages", Integer.toString(pages)));
-        for (ConfiguredCommandTree.Branch<CommandSourceStack> branch :
+        for (ConfiguredCommandTree.Branch branch :
                 usable.subList((shown - 1) * HELP_PAGE, Math.min(usable.size(), shown * HELP_PAGE))) {
             String usage = "help.commands." + branch.key() + ".usage";
             Component usageLine = messages.has(usage)

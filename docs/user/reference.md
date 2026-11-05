@@ -173,17 +173,21 @@ Command words are the shipped ones; `commands.conf` renames, aliases or turns of
 | `uxmskyblock.island.upgrade` | everyone | Upgrade island perks |
 | `uxmskyblock.island.top` | everyone | View island leaderboards |
 | `uxmskyblock.island.fly` | everyone | Fly on your own island with /is fly |
+| `uxmskyblock.bypass.limits` | nobody | Place past an island's block and creature limits |
+| `uxmskyblock.bypass.quarantine` | nobody | Enter a quarantined island |
+| `uxmskyblock.bypass.coopcooldown` | nobody | Join another island before the join cooldown ends |
+| `uxmskyblock.bypass.resetlimits` | nobody | Reset an island past the reset limits |
+| `uxmskyblock.brix.keepmode` | op | Keep one's game mode on a Brix plot |
+| `uxmskyblock.parkour.keepmode` | op | Keep one's game mode on a Parkour course |
+| `uxmskyblock.parkour.checks.bypass` | nobody | Run a Parkour course without its checks |
 | `uxmskyblock.chat.spy` | op | Spy on island private chat channels |
-| `uxmskyblock.bypass.limits` | op | Place blocks and entities past an island's limits (`modules/limits.conf`) |
-| `uxmskyblock.bypass.quarantine` | op | Enter a quarantined island |
-| `uxmskyblock.bypass.coopcooldown` | op | Join another island before the co-op cooldown ends (`modules/anti_abuse.conf`) |
-| `uxmskyblock.bypass.resetlimits` | op | Reset an island more often than `modules/anti_abuse.conf` allows |
-| `uxmskyblock.brix.keepmode` | op | Keep the game mode on a Brix plot (`modules/brix.conf`) |
-| `uxmskyblock.parkour.keepmode` | op | Keep the game mode on a Parkour course (`modules/parkour.conf`) |
-| `uxmskyblock.parkour.checks.bypass` | op | Run a Parkour course without its checks (`modules/parkour.conf`) |
+| `uxmskyblock.admin.*` | op | Every `uxmskyblock.admin.` node above |
+| `uxmskyblock.bypass.*` | nobody | Every `uxmskyblock.bypass.` node above |
+| `uxmskyblock.*` | nobody | Every node above |
 
-The last seven are the shipped names of nodes a module file sets; changing the name there changes the node.
-What a member may do on their island is decided by island roles (`/is permissions`), not by these nodes.
+The bypass, keep-mode and Parkour check nodes are the shipped names a module file sets; changing the name there changes the node.
+What a member may do on their island is decided by island roles (`/is permissions`), not by these nodes. A word a player may not use
+stays out of their command list, and typed anyway it answers with the no-permission line in their language.
 
 ## Placeholders
 

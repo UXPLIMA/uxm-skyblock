@@ -43,7 +43,7 @@ final class BoosterVerbs {
             host.send(sender, "booster.disabled");
             return Cmd.OK;
         }
-        if (!sender.hasPermission("uxmskyblock.admin.booster")) {
+        if (!sender.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BOOSTER.node())) {
             host.send(sender, "booster.no_permission");
             return Cmd.OK;
         }

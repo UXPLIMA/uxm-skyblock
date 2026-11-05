@@ -85,8 +85,10 @@ public record ParkourConfiguration(
      */
     public record Modes(org.bukkit.GameMode build, org.bukkit.GameMode play, String keepPermission) {
 
-        public static final Modes SHIPPED =
-                new Modes(org.bukkit.GameMode.CREATIVE, org.bukkit.GameMode.SURVIVAL, "uxmskyblock.parkour.keepmode");
+        public static final Modes SHIPPED = new Modes(
+                org.bukkit.GameMode.CREATIVE,
+                org.bukkit.GameMode.SURVIVAL,
+                com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.PARKOUR_KEEP_MODE.node());
 
         public Modes {
             Objects.requireNonNull(build, "build must not be null");
@@ -223,7 +225,12 @@ public record ParkourConfiguration(
      */
     public record Checks(boolean flight, boolean teleports, boolean speed, double fastest, String bypassPermission) {
 
-        public static final Checks SHIPPED = new Checks(true, true, true, 16, "uxmskyblock.parkour.checks.bypass");
+        public static final Checks SHIPPED = new Checks(
+                true,
+                true,
+                true,
+                16,
+                com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.PARKOUR_CHECKS_BYPASS.node());
 
         public Checks {
             Objects.requireNonNull(bypassPermission, "bypassPermission must not be null");

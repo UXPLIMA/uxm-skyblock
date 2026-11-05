@@ -7,9 +7,9 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 /**
- * Programmatic catalog of all platform-level permissions for UxMSkyblock.
- * Every permission node is registered with Paper''s {@link PluginManager} during startup
- * for full autocomplete and LuckPerms compatibility.
+ * Every permission node the plugin checks, with its description and default. {@code paper-plugin.yml} declares the
+ * same nodes, with {@code uxmskyblock.admin.*} and {@code uxmskyblock.*} as their parents; registering them again at
+ * start is harmless and keeps a node a test server lacks known.
  */
 public enum CatalogPermissions {
     ADMIN_BYPASS("uxmskyblock.admin.bypass", "Bypass all island protection and boundaries", PermissionDefault.OP),
@@ -97,6 +97,19 @@ public enum CatalogPermissions {
     ISLAND_UPGRADE("uxmskyblock.island.upgrade", "Upgrade island perks", PermissionDefault.TRUE),
     ISLAND_TOP("uxmskyblock.island.top", "View island leaderboards", PermissionDefault.TRUE),
     ISLAND_FLY("uxmskyblock.island.fly", "Fly on your own island with /is fly", PermissionDefault.TRUE),
+    BYPASS_LIMITS(
+            "uxmskyblock.bypass.limits", "Place past an island's block and creature limits", PermissionDefault.FALSE),
+    BYPASS_QUARANTINE("uxmskyblock.bypass.quarantine", "Enter a quarantined island", PermissionDefault.FALSE),
+    BYPASS_COOP_COOLDOWN(
+            "uxmskyblock.bypass.coopcooldown",
+            "Join another island before the join cooldown ends",
+            PermissionDefault.FALSE),
+    BYPASS_RESET_LIMITS(
+            "uxmskyblock.bypass.resetlimits", "Reset an island past the reset limits", PermissionDefault.FALSE),
+    BRIX_KEEP_MODE("uxmskyblock.brix.keepmode", "Keep one's game mode on a Brix plot", PermissionDefault.OP),
+    PARKOUR_KEEP_MODE("uxmskyblock.parkour.keepmode", "Keep one's game mode on a Parkour course", PermissionDefault.OP),
+    PARKOUR_CHECKS_BYPASS(
+            "uxmskyblock.parkour.checks.bypass", "Run a Parkour course without its checks", PermissionDefault.FALSE),
     CHAT_SPY("uxmskyblock.chat.spy", "Spy on island private chat channels", PermissionDefault.OP);
 
     private final String node;

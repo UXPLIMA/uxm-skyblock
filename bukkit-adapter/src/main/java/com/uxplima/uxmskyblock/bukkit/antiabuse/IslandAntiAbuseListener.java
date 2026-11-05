@@ -90,8 +90,7 @@ public final class IslandAntiAbuseListener implements Listener, ArrivalGate {
     }
 
     private boolean hasBypass(Player player) {
-        return player.isOp()
-                || player.hasPermission("uxmskyblock.admin.bypass")
+        return player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())
                 || player.hasPermission(configuration.quarantineBypassPermission());
     }
 

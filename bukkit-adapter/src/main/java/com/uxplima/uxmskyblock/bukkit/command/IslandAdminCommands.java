@@ -21,6 +21,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 import com.uxplima.uxmskyblock.bukkit.listener.IslandProtectionListener;
 import com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions;
@@ -107,38 +108,32 @@ public final class IslandAdminCommands {
 
     public LiteralArgumentBuilder<CommandSourceStack> buildAdmin() {
         return Cmd.literal("admin")
-                .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_FREEZE.node())
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_INSPECT.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_FREEZE.node()))
+                        .or(Gate.permission(CatalogPermissions.ADMIN_INSPECT.node())))
                 // A scan archives and deletes islands, so it asks for management, not merely for a
                 // way into the admin branch. It asked for nothing of its own, and a moderator trusted
                 // only to inspect could start one.
                 .then(Cmd.literal("inactivity")
-                        .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node()))
                         .then(Cmd.literal("scan").executes(this::executeAdminInactivityScan)))
                 .then(Cmd.literal("freeze")
-                        .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_FREEZE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_FREEZE.node()))
                         .then(Cmd.argument("target", StringArgumentType.word())
                                 .executes(ctx -> executeAdminFreeze(ctx, "Administrative quarantine"))
                                 .then(Cmd.argument("reason", StringArgumentType.greedyString())
                                         .executes(ctx ->
                                                 executeAdminFreeze(ctx, StringArgumentType.getString(ctx, "reason"))))))
                 .then(Cmd.literal("unfreeze")
-                        .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_FREEZE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_FREEZE.node()))
                         .then(Cmd.argument("target", StringArgumentType.word()).executes(this::executeAdminUnfreeze)))
                 .then(Cmd.literal("inspect")
-                        .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_INSPECT.node())
-                                || src.getSender().hasPermission(CatalogPermissions.ADMIN_FREEZE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_INSPECT.node())
+                                .or(Gate.permission(CatalogPermissions.ADMIN_FREEZE.node())))
                         .then(Cmd.argument("target", StringArgumentType.word()).executes(this::executeAdminInspect)))
                 .then(Cmd.literal("restore")
-                        .requires(src -> src.getSender().hasPermission("uxmskyblock.admin.restore")
-                                || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_RESTORE.node())
+                                .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                         .then(Cmd.argument("backupId", StringArgumentType.word())
                                 .executes(ctx -> restoreCommands.executeAdminRestore(ctx, RestoreMode.safeDefault()))
                                 .then(Cmd.argument("mode", StringArgumentType.word())
@@ -146,8 +141,7 @@ public final class IslandAdminCommands {
                 .then(restoreCommands.buildRollback())
                 .then(restoreCommands.buildBackup())
                 .then(Cmd.literal("delete")
-                        .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                                || src.getSender().isOp())
+                        .requires(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node()))
                         .then(Cmd.argument("target", StringArgumentType.word())
                                 .executes(restoreCommands::executeAdminDelete)));
     }

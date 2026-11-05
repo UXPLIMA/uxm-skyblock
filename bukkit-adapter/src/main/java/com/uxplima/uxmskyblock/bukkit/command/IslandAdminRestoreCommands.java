@@ -19,6 +19,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 import com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions;
 import com.uxplima.uxmskyblock.bukkit.session.PlayerSessionCoordinator;
@@ -110,9 +111,8 @@ public final class IslandAdminRestoreCommands {
      */
     public LiteralArgumentBuilder<CommandSourceStack> buildRollback() {
         return Cmd.literal("rollback")
-                .requires(src -> src.getSender().hasPermission("uxmskyblock.admin.restore")
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_RESTORE.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 .then(Cmd.argument("island", StringArgumentType.word())
                         .executes(ctx -> executeRollback(ctx, RestoreMode.safeDefault()))
                         .then(Cmd.argument("mode", StringArgumentType.word()).executes(this::executeRollbackWithMode)));
@@ -189,9 +189,8 @@ public final class IslandAdminRestoreCommands {
      */
     public LiteralArgumentBuilder<CommandSourceStack> buildBackup() {
         return Cmd.literal("backup")
-                .requires(src -> src.getSender().hasPermission("uxmskyblock.admin.restore")
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_RESTORE.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 // The specification publishes two kinds of backup. This is the second one, and
                 // until now nothing could take it: the port, its adapter and the word in the
                 // catalog table were all written and no command drove any of them.
@@ -206,9 +205,8 @@ public final class IslandAdminRestoreCommands {
 
     public LiteralArgumentBuilder<CommandSourceStack> buildRestore() {
         return Cmd.literal("restore")
-                .requires(src -> src.getSender().hasPermission("uxmskyblock.admin.restore")
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_RESTORE.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 // Putting the whole database back is its own verb. It is not an island restore
                 // with a flag turned on, and the island restore refuses a database backup set.
                 .then(Cmd.literal("database")
@@ -288,9 +286,8 @@ public final class IslandAdminRestoreCommands {
 
     public int executeAdminRestore(CommandContext<CommandSourceStack> ctx, RestoreMode mode) {
         CommandSender sender = ctx.getSource().getSender();
-        if (!sender.hasPermission("uxmskyblock.admin.restore")
-                && !sender.hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                && !sender.isOp()) {
+        if (!sender.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_RESTORE.node())
+                && !sender.hasPermission(CatalogPermissions.ADMIN_MANAGE.node())) {
             send(sender, "admin.restore_no_permission");
             return Cmd.OK;
         }

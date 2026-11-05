@@ -215,7 +215,9 @@ public final class IslandBoundaryListener implements Listener, ArrivalGate, Arri
         if (fromIsland.isPresent()
                 && toIsland.isEmpty()
                 && stopBorderCrossing
-                && !event.getPlayer().hasPermission("uxmskyblock.admin.bypass")) {
+                && !event.getPlayer()
+                        .hasPermission(
+                                com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             event.setCancelled(true);
             messages.send(event.getPlayer(), "navigation.void_blocked");
             return;

@@ -23,6 +23,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmlib.schematic.Schematic;
 import com.uxplima.uxmlib.schematic.Vec3i;
 import com.uxplima.uxmlib.schematic.nbt.NbtCompound;
@@ -69,9 +70,8 @@ public final class IslandSchematicCommands {
 
     public LiteralArgumentBuilder<CommandSourceStack> build() {
         return Cmd.literal("schematic")
-                .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_SCHEMATIC.node())
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_SCHEMATIC.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 .executes(ctx -> usage(ctx.getSource().getSender()))
                 .then(Cmd.literal("pos1").executes(ctx -> mark(ctx, true)))
                 .then(Cmd.literal("pos2").executes(ctx -> mark(ctx, false)))

@@ -17,6 +17,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.uxplima.uxmlib.command.Cmd;
 import com.uxplima.uxmlib.command.CommandRegistrar;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmlib.command.annotation.ConfiguredCommands;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 import com.uxplima.uxmskyblock.bukkit.session.PlayerSessionCoordinator;
@@ -65,10 +66,9 @@ public final class ModeAdminCommands {
     }
 
     /** The verb {@code verb}, there only for a sender who holds {@code permission}, its own node. */
-    @SuppressWarnings("deprecation")
     public static LiteralArgumentBuilder<CommandSourceStack> verb(
             String verb, com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions permission) {
-        return Cmd.literal(verb).requires(Cmd.permission(permission.node()));
+        return Cmd.literal(verb).requires(Gate.permission(permission.node()));
     }
 
     /**
@@ -76,39 +76,42 @@ public final class ModeAdminCommands {
      * Assembled but not registered, so a test can hand it to Brigadier.
      */
     public Optional<LiteralArgumentBuilder<CommandSourceStack>> build(
-            @Nullable ConfiguredCommands names, BiPredicate<CommandSourceStack, String> reads) {
-        ConfiguredCommandTree<CommandSourceStack> tree =
-                new ConfiguredCommandTree<>(names, reads, ROOT, ROOT, List.of());
+            @Nullable ConfiguredCommands names, BiPredicate<org.bukkit.command.CommandSender, String> reads) {
+        ConfiguredCommandTree tree = new ConfiguredCommandTree(names, reads, ROOT, ROOT, List.of());
         if (modes.isEmpty() || !tree.root().enabled()) {
             return Optional.empty();
         }
         LiteralArgumentBuilder<CommandSourceStack> root = Cmd.literal(ROOT);
-        List<java.util.function.Predicate<CommandSourceStack>> branches = new java.util.ArrayList<>();
+        Gate anyBranch = null;
         for (Mode mode : modes) {
             LiteralArgumentBuilder<CommandSourceStack> branch = mode.build(this);
             // A branch is there for a sender who may use one of its verbs, and the command for one who may use any.
-            List<java.util.function.Predicate<CommandSourceStack>> verbs = branch.getArguments().stream()
-                    .map(com.mojang.brigadier.tree.CommandNode::getRequirement)
-                    .toList();
-            java.util.function.Predicate<CommandSourceStack> any =
-                    source -> verbs.stream().anyMatch(verb -> verb.test(source));
-            branches.add(any);
-            ConfiguredCommandTree<CommandSourceStack> named = new ConfiguredCommandTree<>(
+            Gate anyVerb = branch.getArguments().stream()
+                    .map(verb -> Gate.of(verb.getRequirement()))
+                    .reduce(Gate::or)
+                    .orElseGet(Gate::open);
+            anyBranch = anyBranch == null ? anyVerb : anyBranch.or(anyVerb);
+            ConfiguredCommandTree named = new ConfiguredCommandTree(
                     names, reads, ConfiguredCommands.branchKey(ROOT, mode.key()), mode.key(), List.of());
-            root.then(named.applyToBranches(branch.requires(any)));
+            root.then(named.applyToBranches(branch.requires(anyVerb)));
         }
-        root.requires(source -> branches.stream().anyMatch(branch -> branch.test(source)));
+        root.requires(anyBranch == null ? Gate.open() : anyBranch);
         return Optional.of(tree.apply(root));
     }
 
     /** Registers the command, as {@code names} names it. */
     public void register(
-            JavaPlugin plugin, @Nullable ConfiguredCommands names, BiPredicate<CommandSourceStack, String> reads) {
+            JavaPlugin plugin,
+            @Nullable ConfiguredCommands names,
+            BiPredicate<org.bukkit.command.CommandSender, String> reads) {
         build(names, reads).ifPresent(root -> {
-            ConfiguredCommandTree<CommandSourceStack> tree =
-                    new ConfiguredCommandTree<>(names, reads, ROOT, ROOT, List.of());
+            ConfiguredCommandTree tree = new ConfiguredCommandTree(names, reads, ROOT, ROOT, List.of());
             CommandRegistrar.register(
-                    plugin, root.build(), "What an operator does to a mode's islands", tree.rootAliases());
+                    plugin,
+                    root.build(),
+                    "What an operator does to a mode's islands",
+                    tree.rootAliases(),
+                    (source, gate) -> send(source.getSender(), "command.no_permission"));
         });
     }
 
