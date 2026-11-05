@@ -3,6 +3,8 @@ version: '${version}'
 main: com.uxplima.uxmskyblock.bukkit.bootstrap.UxMSkyblockPlugin
 # Hands the server the data pack of the sulfur sea biome before the worlds load.
 bootstrapper: com.uxplima.uxmskyblock.bukkit.bootstrap.UxMSkyblockBootstrap
+# Fetches the MariaDB and PostgreSQL drivers into the server's libraries folder.
+loader: com.uxplima.uxmskyblock.bukkit.bootstrap.SkyblockLoader
 api-version: '26.2'
 folia-supported: true
 # Before the worlds, so the default world can be given the island generator.

@@ -95,7 +95,7 @@ public final class GameplayWiring extends GameplayParts {
                 economyBridgeSupplier,
                 chatTransport,
                 new LocalFilesystemStorageAdapter(
-                        plugin.getDataFolder().toPath().resolve("backups")),
+                        plugin.getDataFolder().toPath().resolve(PersistenceWiring.ISLAND_BACKUPS)),
                 new StorageBucket(PersistenceWiring.DEFAULT_BACKUP_BUCKET));
     }
 

@@ -4,6 +4,8 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import com.uxplima.uxmlib.storage.sql.Backend;
+import com.uxplima.uxmlib.storage.sql.StorageSettings;
 import com.uxplima.uxmskyblock.core.application.storage.ObjectStoragePort;
 import com.uxplima.uxmskyblock.core.domain.storage.ProviderVerificationStatus;
 import com.uxplima.uxmskyblock.core.domain.storage.S3AddressingMode;
@@ -24,6 +26,12 @@ import org.spongepowered.configurate.ConfigurationNode;
  * database driver selection, and object storage engine resolution (Local/S3/R2).
  */
 public final class PersistenceWiring implements AutoCloseable {
+
+    /** The SQLite file under {@code data/}, unless the storage block names another. */
+    static final String DATABASE_FILE = "skyblock.db";
+
+    /** Where island backups go on this server's disk, under the plugin's folder, unless the file names another. */
+    public static final String ISLAND_BACKUPS = "data/island-backups";
 
     /** The bucket a backup is written to when the operator names none. */
     public static final String DEFAULT_BACKUP_BUCKET = "uxmskyblock-backups";
@@ -50,7 +58,7 @@ public final class PersistenceWiring implements AutoCloseable {
     }
 
     public PersistenceWiring(PersistenceBootstrap persistenceBootstrap) {
-        this(persistenceBootstrap, new LocalFilesystemStorageAdapter(Path.of("backups")));
+        this(persistenceBootstrap, new LocalFilesystemStorageAdapter(Path.of(ISLAND_BACKUPS)));
     }
 
     /**
@@ -103,7 +111,7 @@ public final class PersistenceWiring implements AutoCloseable {
 
     private static java.time.Duration durationAt(
             @Nullable ConfigurationNode rootNode, String key, java.time.Duration fallback) {
-        String raw = rootNode == null ? null : rootNode.node("database", key).getString();
+        String raw = rootNode == null ? null : rootNode.node("storage", key).getString();
         if (raw == null || raw.isBlank()) {
             return fallback;
         }
@@ -115,7 +123,7 @@ public final class PersistenceWiring implements AutoCloseable {
         } catch (RuntimeException unreadable) {
             // Said below, with the value the database is given instead.
         }
-        LOGGER.warning("database." + key + " '" + raw + "' is not a positive duration, so " + fallback.toMillis()
+        LOGGER.warning("storage." + key + " '" + raw + "' is not a positive duration, so " + fallback.toMillis()
                 + "ms is used.");
         return fallback;
     }
@@ -132,32 +140,33 @@ public final class PersistenceWiring implements AutoCloseable {
         if (envJdbc != null && !envJdbc.isBlank()) {
             persistenceBootstrap =
                     PersistenceBootstrap.createRemote(withDeadlines(envJdbc.trim(), rootNode), envUser, envPass, 10);
-        } else if (rootNode != null && isRemoteConfigured(rootNode)) {
-            ConfigurationNode dbNode = rootNode.node("database");
-            String jdbcUrl = dbNode.node("jdbc-url").getString();
-            String user = dbNode.node("username").getString("");
-            String pass = dbNode.node("password").getString("");
-            int poolSize = dbNode.node("max-pool-size").getInt(10);
-            persistenceBootstrap =
-                    PersistenceBootstrap.createRemote(withDeadlines(jdbcUrl.trim(), rootNode), user, pass, poolSize);
         } else {
-            Path dbFile = dataDir.resolve("skyblock.db");
-            persistenceBootstrap = PersistenceBootstrap.createSqlite(dbFile);
+            StorageSettings storage = storageSettings(rootNode);
+            if (storage.backend().isFile()) {
+                persistenceBootstrap = PersistenceBootstrap.createSqlite(storage.sqliteFile(dataDir));
+            } else {
+                persistenceBootstrap = PersistenceBootstrap.createRemote(
+                        withDeadlines(storage.jdbcUrl(dataDir), rootNode),
+                        storage.username(),
+                        storage.password(),
+                        storage.poolSize());
+            }
         }
 
         // A commit is only as durable as the engine settings under it. Read once, at startup, before
         // anything is written.
         persistenceBootstrap.enforceDurability(com.uxplima.uxmskyblock.persistence.sql.DurabilityCheck.Profile.parse(
                 rootNode != null
-                        ? rootNode.node("database", "durability-profile").getString()
+                        ? rootNode.node("storage", "durability-profile").getString()
                         : null));
 
         useGridSpacing(persistenceBootstrap, rootNode);
 
         // The bucket is named once, whichever storage backend is chosen, because a backup written
         // under one name has to be read back under the same one.
-        String configuredBucket =
-                rootNode != null ? rootNode.node("storage", "s3", "bucket").getString() : null;
+        String configuredBucket = rootNode != null
+                ? rootNode.node("island-backups", "s3", "bucket").getString()
+                : null;
         if (configuredBucket == null || configuredBucket.isBlank()) {
             configuredBucket = System.getProperty("skyblock.s3.bucket", System.getenv("SKYBLOCK_S3_BUCKET"));
         }
@@ -170,7 +179,7 @@ public final class PersistenceWiring implements AutoCloseable {
         ObjectStoragePort objectStorage;
         String storageType = null;
         if (rootNode != null) {
-            storageType = rootNode.node("storage", "type").getString();
+            storageType = rootNode.node("island-backups", "type").getString();
         }
         if (storageType == null || storageType.isBlank()) {
             storageType = System.getProperty("skyblock.storage.type", System.getenv("SKYBLOCK_STORAGE_TYPE"));
@@ -189,10 +198,11 @@ public final class PersistenceWiring implements AutoCloseable {
         return new PersistenceWiring(persistenceBootstrap, objectStorage, backupBucket);
     }
 
-    /** The remote destination the {@code storage.s3} block describes. */
+    /** The remote destination the {@code island-backups.s3} block describes. */
     private static ObjectStoragePort s3Storage(@Nullable ConfigurationNode rootNode, StorageBucket backupBucket) {
-        String endpointStr =
-                rootNode != null ? rootNode.node("storage", "s3", "endpoint").getString() : null;
+        String endpointStr = rootNode != null
+                ? rootNode.node("island-backups", "s3", "endpoint").getString()
+                : null;
         if (endpointStr == null || endpointStr.isBlank()) {
             endpointStr = System.getProperty("skyblock.s3.endpoint", System.getenv("SKYBLOCK_S3_ENDPOINT"));
         }
@@ -200,8 +210,9 @@ public final class PersistenceWiring implements AutoCloseable {
             endpointStr = "https://s3.amazonaws.com";
         }
 
-        String region =
-                rootNode != null ? rootNode.node("storage", "s3", "region").getString() : null;
+        String region = rootNode != null
+                ? rootNode.node("island-backups", "s3", "region").getString()
+                : null;
         if (region == null || region.isBlank()) {
             region = System.getProperty("skyblock.s3.region", System.getenv("SKYBLOCK_S3_REGION"));
         }
@@ -209,8 +220,9 @@ public final class PersistenceWiring implements AutoCloseable {
             region = "us-east-1";
         }
 
-        String accessKey =
-                rootNode != null ? rootNode.node("storage", "s3", "access-key").getString() : null;
+        String accessKey = rootNode != null
+                ? rootNode.node("island-backups", "s3", "access-key").getString()
+                : null;
         if (accessKey == null || accessKey.isBlank()) {
             accessKey = System.getProperty("skyblock.s3.access.key", System.getenv("SKYBLOCK_S3_ACCESS_KEY"));
         }
@@ -218,8 +230,9 @@ public final class PersistenceWiring implements AutoCloseable {
             accessKey = "anonymous";
         }
 
-        String secretKey =
-                rootNode != null ? rootNode.node("storage", "s3", "secret-key").getString() : null;
+        String secretKey = rootNode != null
+                ? rootNode.node("island-backups", "s3", "secret-key").getString()
+                : null;
         if (secretKey == null || secretKey.isBlank()) {
             secretKey = System.getProperty("skyblock.s3.secret.key", System.getenv("SKYBLOCK_S3_SECRET_KEY"));
         }
@@ -228,7 +241,7 @@ public final class PersistenceWiring implements AutoCloseable {
         }
 
         String sessionToken = rootNode != null
-                ? rootNode.node("storage", "s3", "session-token").getString()
+                ? rootNode.node("island-backups", "s3", "session-token").getString()
                 : null;
         if (sessionToken == null || sessionToken.isBlank()) {
             sessionToken = System.getProperty("skyblock.s3.session.token", System.getenv("SKYBLOCK_S3_SESSION_TOKEN"));
@@ -240,14 +253,14 @@ public final class PersistenceWiring implements AutoCloseable {
         S3Credentials credentials = S3Credentials.of(accessKey, secretKey, sessionToken);
 
         String rawAddressing = rootNode != null
-                ? rootNode.node("storage", "s3", "addressing-mode").getString("PATH_STYLE")
+                ? rootNode.node("island-backups", "s3", "addressing-mode").getString("PATH_STYLE")
                 : "PATH_STYLE";
         S3AddressingMode addressingMode = "VIRTUAL_HOSTED".equalsIgnoreCase(rawAddressing)
                 ? S3AddressingMode.VIRTUAL_HOSTED
                 : S3AddressingMode.PATH_STYLE;
 
         String rawTarget = rootNode != null
-                ? rootNode.node("storage", "s3", "provider-target").getString("GENERIC_S3")
+                ? rootNode.node("island-backups", "s3", "provider-target").getString("GENERIC_S3")
                 : "GENERIC_S3";
         S3ProviderTarget providerTarget = "AWS".equalsIgnoreCase(rawTarget) || "AWS_S3".equalsIgnoreCase(rawTarget)
                 ? S3ProviderTarget.AWS_S3
@@ -272,26 +285,36 @@ public final class PersistenceWiring implements AutoCloseable {
         return new S3ObjectStorageAdapter(s3Config);
     }
 
-    /** The local destination, the folder {@code storage.local-path} names under the data folder. */
+    /** The local destination, the folder {@code island-backups.local-path} names under the data folder. */
     private static ObjectStoragePort localStorage(@Nullable ConfigurationNode rootNode, Path dataDir) {
         String localPathStr =
-                rootNode != null ? rootNode.node("storage", "local-path").getString() : null;
+                rootNode != null ? rootNode.node("island-backups", "local-path").getString() : null;
         Path backupDir = (localPathStr != null && !localPathStr.isBlank())
                 ? dataDir.resolve(localPathStr.trim())
-                : dataDir.resolve("backups");
+                : dataDir.resolve(ISLAND_BACKUPS);
         return new LocalFilesystemStorageAdapter(backupDir);
     }
 
-    private static boolean isRemoteConfigured(ConfigurationNode rootNode) {
-        ConfigurationNode dbNode = rootNode.node("database");
-        String dbType = dbNode.node("type").getString("sqlite");
-        if ("remote".equalsIgnoreCase(dbType)
-                || "mysql".equalsIgnoreCase(dbType)
-                || "postgresql".equalsIgnoreCase(dbType)) {
-            String jdbcUrl = dbNode.node("jdbc-url").getString();
-            return jdbcUrl != null && !jdbcUrl.isBlank();
-        }
-        return false;
+    /**
+     * The {@code storage} block: SQLite in {@code data/skyblock.db} unless it names a network database. A file an
+     * earlier release kept beside the configuration moves into {@code data/} when it is opened.
+     */
+    static StorageSettings storageSettings(@Nullable ConfigurationNode rootNode) {
+        ConfigurationNode node = rootNode == null ? null : rootNode.node("storage");
+        Backend backend =
+                Backend.named(node == null ? "sqlite" : node.node("type").getString("sqlite"));
+        int port = node == null ? 0 : node.node("port").getInt(0);
+        return new StorageSettings(
+                backend,
+                node == null ? DATABASE_FILE : node.node("file").getString(DATABASE_FILE),
+                node == null ? "localhost" : node.node("host").getString("localhost"),
+                port == 0 ? backend.defaultPort() : port,
+                node == null ? "minecraft" : node.node("database").getString("minecraft"),
+                node == null ? "minecraft" : node.node("username").getString("minecraft"),
+                node == null ? "" : node.node("password").getString(""),
+                "",
+                node == null ? 10 : node.node("pool-size").getInt(10),
+                false);
     }
 
     public PersistenceBootstrap bootstrap() {

@@ -213,7 +213,7 @@ operator wrote.
 
 | File | What it holds |
 |---|---|
-| `config.conf` | This server's node, language, player state, notifications, database, island roles, homes, the REST API, the island grid, backup storage and menu sounds |
+| `config.conf` | This server on the network, the island grid, language, storage, player state, notifications, island roles, homes, the REST API, island backups and menu sounds |
 | `modules.conf` | Which modules run, and the capabilities they need |
 | `commands.conf` | The words of `/island` and `/isadmin`: names, aliases, words per language, on or off |
 | `theme.conf` | Colours, glyphs and the writing of the interface |
@@ -223,4 +223,5 @@ operator wrote.
 | `modules/*.conf` | One file per module: the game modes (`acidisland`, `boxed`, `brix`, `caveblock`, `chunkblock`, `oneblock`, `parkour`, `poseidon`, `skygrid`, `strangerrealms`, `tradewinds`), and `alliances`, `anti_abuse`, `bank`, `biomes`, `boosters`, `chat`, `dimensions`, `discord`, `effects`, `fly`, `generators`, `inactivity`, `interactables`, `island-effects`, `levels`, `lifecycle`, `limits`, `missions`, `performance`, `player-state`, `presets`, `protection`, `rewards`, `seasons`, `settings`, `shop`, `social`, `stacking`, `temporary-access`, `trade`, `upgrades`, `vault`, `visitors`, `walls`, `warps`, `webmap`, `world` |
 | `oneblock/phases/*.conf` | One file per OneBlock phase: its blocks, creatures and chests |
 | `loot/*.conf` | Loot tables containers draw from: SkyGrid chests, treasure and the deep boss |
-| `backups/` | Island and database backups |
+| `data/` | The SQLite database (`skyblock.db`) and, by default, island backups (`island-backups/`) |
+| `backups/` | The last five copies of each configuration file, taken before a start writes it again |

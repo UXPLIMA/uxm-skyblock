@@ -99,7 +99,7 @@ final class IslandBackupVerbs {
         host.schedulerPort.async(() -> {
             try {
                 BackupSetId backupSetId = BackupSetId.fromString(backupIdStr);
-                // The bucket is the one the operator named in storage.s3.bucket. It used to be
+                // The bucket is the one the operator named in island-backups.s3.bucket. It used to be
                 // written into this line, so an operator who renamed their bucket wrote backups to
                 // one place and restored from another that does not exist: the restore answered
                 // "manifest missing" and said nothing about why.
