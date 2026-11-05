@@ -25,6 +25,7 @@ dependencies {
 
     implementation(uxm.uxmlib.common)
     implementation(uxm.uxmlib.storage)
+    implementation(uxm.uxmlib.board) { isTransitive = false }
     implementation(uxm.uxmlib.item)
     implementation(uxm.uxmlib.gui)
     implementation(uxm.uxmlib.menu)
