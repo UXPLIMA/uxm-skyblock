@@ -1,114 +1,23 @@
+# Only what the shared `uxm` catalog does not carry.
+
 [versions]
-# Platform & Language
-java           = "25"
-paper          = "26.2.build.112-stable"
-adventure      = "5.2.0"
-
-# UXPLIMA Toolkit
-uxmlib         = "0.220.0"                 # com.uxplima.uxmlib on repo.uxplima.com
-
-# Usage statistics, shaded and relocated into the plugin jar
-bstats         = "3.0.2"
-
-# Test only: the Vault economy interface, so a booted test server can hold a real wallet
-vault-api      = "1.7.1"
-
-# Runtime Database Drivers (selected network drivers required at runtime; SQLite is provided by uxmlib-storage)
-sqlite-jdbc    = "3.49.1.0"
-mariadb-jdbc   = "3.5.3"
-postgresql     = "42.7.4"
-# The MySQL driver Paper itself ships, which a server on a jdbc:mysql: URL connects through. Tests only.
-mysql-connector = "9.2.0"
-gson           = "2.11.0"
-jspecify       = "1.0.0"
-slf4j          = "2.0.16"
-javalin        = "6.4.0"
-lettuce        = "7.6.0.RELEASE"
-
-# Testing
-junit          = "5.12.1"
-assertj        = "3.27.3"
-mockito        = "5.23.0"
-mockbukkit     = "4.116.1"
-jqwik          = "1.9.3"
-archunit       = "1.4.2"
-testcontainers = "1.21.4"
-# The netty the server ships. The jar bundles none, so Lettuce runs on this one; the Redis test holds its runtime here.
-netty          = "4.2.17.Final"
-
-# Quality & Tooling
-errorprone     = "2.50.0"
-nullaway       = "0.13.7"
-spotless       = "8.7.0"
-palantir-fmt   = "2.93.0"
-shadow         = "9.4.1"
-paperweight    = "2.0.0-beta.22"
-run-paper      = "3.0.2"
+adventure = "5.2.0"
+mariadb-jdbc = "3.5.3"
+postgresql = "42.7.4"
+gson = "2.11.0"
+slf4j = "2.0.16"
+javalin = "6.4.0"
+lettuce = "7.6.0.RELEASE"
 
 [libraries]
-bstats-bukkit     = { module = "org.bstats:bstats-bukkit",                        version.ref = "bstats" }
-# Server & Adventure
-paper-api         = { module = "io.papermc.paper:paper-api",                     version.ref = "paper" }
-adventure-api     = { module = "net.kyori:adventure-api",                        version.ref = "adventure" }
-adventure-mini    = { module = "net.kyori:adventure-text-minimessage",           version.ref = "adventure" }
-
-# uxmLib Modules
-uxmlib-bom        = { module = "com.uxplima.uxmlib:uxmlib-bom",                  version.ref = "uxmlib" }
-uxmlib-common     = { module = "com.uxplima.uxmlib:uxmlib-common",               version.ref = "uxmlib" }
-uxmlib-item       = { module = "com.uxplima.uxmlib:uxmlib-item",                 version.ref = "uxmlib" }
-uxmlib-gui        = { module = "com.uxplima.uxmlib:uxmlib-gui",                  version.ref = "uxmlib" }
-uxmlib-menu       = { module = "com.uxplima.uxmlib:uxmlib-menu",                 version.ref = "uxmlib" }
-uxmlib-command    = { module = "com.uxplima.uxmlib:uxmlib-command",              version.ref = "uxmlib" }
-uxmlib-storage    = { module = "com.uxplima.uxmlib:uxmlib-storage",              version.ref = "uxmlib" }
-uxmlib-hud        = { module = "com.uxplima.uxmlib:uxmlib-hud",                  version.ref = "uxmlib" }
-uxmlib-bedrock    = { module = "com.uxplima.uxmlib:uxmlib-bedrock",              version.ref = "uxmlib" }
-uxmlib-condition  = { module = "com.uxplima.uxmlib:uxmlib-condition",            version.ref = "uxmlib" }
-uxmlib-integration = { module = "com.uxplima.uxmlib:uxmlib-integration",        version.ref = "uxmlib" }
-vault-api         = { module = "com.github.MilkBowl:VaultAPI",                          version.ref = "vault-api" }
-uxmlib-redis      = { module = "com.uxplima.uxmlib:uxmlib-redis",                version.ref = "uxmlib" }
-uxmlib-schematic  = { module = "com.uxplima.uxmlib:uxmlib-schematic",            version.ref = "uxmlib" }
-uxmlib-packet     = { module = "com.uxplima.uxmlib:uxmlib-packet",               version.ref = "uxmlib" }
-lettuce-core      = { module = "io.lettuce:lettuce-core",                                version.ref = "lettuce" }
-
-# Utilities & Infrastructure
-sqlite-jdbc       = { module = "org.xerial:sqlite-jdbc",                         version.ref = "sqlite-jdbc" }
-mariadb-jdbc      = { module = "org.mariadb.jdbc:mariadb-java-client",           version.ref = "mariadb-jdbc" }
-postgresql        = { module = "org.postgresql:postgresql",                      version.ref = "postgresql" }
-mysql-connector-j = { module = "com.mysql:mysql-connector-j",                    version.ref = "mysql-connector" }
-gson              = { module = "com.google.code.gson:gson",                      version.ref = "gson" }
-jspecify          = { module = "org.jspecify:jspecify",                          version.ref = "jspecify" }
-slf4j-api         = { module = "org.slf4j:slf4j-api",                            version.ref = "slf4j" }
-slf4j-simple      = { module = "org.slf4j:slf4j-simple",                         version.ref = "slf4j" }
-javalin           = { module = "io.javalin:javalin",                             version.ref = "javalin" }
-
-# Testing Harness
-junit-bom         = { module = "org.junit:junit-bom",                            version.ref = "junit" }
-junit-jupiter     = { module = "org.junit.jupiter:junit-jupiter" }
-assertj           = { module = "org.assertj:assertj-core",                       version.ref = "assertj" }
-mockito-core      = { module = "org.mockito:mockito-core",                       version.ref = "mockito" }
-mockito-jupiter   = { module = "org.mockito:mockito-junit-jupiter",              version.ref = "mockito" }
-mockbukkit        = { module = "org.mockbukkit.mockbukkit:mockbukkit-v26.2",    version.ref = "mockbukkit" }
-jqwik             = { module = "net.jqwik:jqwik",                                version.ref = "jqwik" }
-archunit-junit            = { module = "com.tngtech.archunit:archunit-junit5",           version.ref = "archunit" }
-testcontainers            = { module = "org.testcontainers:testcontainers",              version.ref = "testcontainers" }
-testcontainers-mariadb    = { module = "org.testcontainers:mariadb",                     version.ref = "testcontainers" }
-testcontainers-postgresql = { module = "org.testcontainers:postgresql",                  version.ref = "testcontainers" }
-testcontainers-mysql      = { module = "org.testcontainers:mysql",                       version.ref = "testcontainers" }
-testcontainers-junit      = { module = "org.testcontainers:junit-jupiter",                version.ref = "testcontainers" }
-
-# Tooling Dependencies (buildSrc & compilation)
-errorprone-core   = { module = "com.google.errorprone:error_prone_core",         version.ref = "errorprone" }
-errorprone-annotations = { module = "com.google.errorprone:error_prone_annotations", version.ref = "errorprone" }
-nullaway          = { module = "com.uber.nullaway:nullaway",                     version.ref = "nullaway" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-mini = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+mariadb-jdbc = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-jdbc" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
+lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
 
 [bundles]
-testing    = ["junit-jupiter", "assertj", "mockito-core", "mockito-jupiter"]
-adventure  = ["adventure-api", "adventure-mini"]
-
-[plugins]
-shadow          = { id = "com.gradleup.shadow",                version.ref = "shadow" }
-paperweight     = { id = "io.papermc.paperweight.userdev",     version.ref = "paperweight" }
-run-paper       = { id = "xyz.jpenilla.run-paper",             version.ref = "run-paper" }
-spotless        = { id = "com.diffplug.spotless",              version.ref = "spotless" }
-errorprone      = { id = "net.ltgt.errorprone",                version = "5.1.0" }
-nullaway-plugin = { id = "net.ltgt.nullaway",                  version = "3.1.0" }
+adventure = ["adventure-api", "adventure-mini"]

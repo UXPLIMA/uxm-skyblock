@@ -65,6 +65,7 @@ public final class ModeAdminCommands {
     }
 
     /** The verb {@code verb}, there only for a sender who holds {@code permission}, its own node. */
+    @SuppressWarnings("deprecation")
     public static LiteralArgumentBuilder<CommandSourceStack> verb(
             String verb, com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions permission) {
         return Cmd.literal(verb).requires(Cmd.permission(permission.node()));

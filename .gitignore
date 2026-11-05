@@ -1,36 +1,31 @@
-# Local References
-references/
-
-# Build & Gradle
+# Gradle
 .gradle/
 build/
-bin/
-out/
+.kotlin/
+!gradle-wrapper.jar
 
-# IDE
+# Editors
 .idea/
 *.iml
-.project
-.classpath
-.settings/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local servers and logs
+run/
 *.log
+hs_err_pid*
+replay_pid*
 
-# Testing
-.jqwik-database
+# Secrets
+.env
+.env.*
+*.keystore
+*.pem
+*.key
 
-# Internal documentation. The specifications and the board stay on the development
-# machine: the repository is public and the competitor analysis is not for it.
-docs/
-project-board.html
-
-# Agents & AI
-.agents/
-CLAUDE.md
-claude.md
-.claude/
-.gemini/
-.cursor/
-.windsurf/
-
-# Archives
-*.zip
+# Session settings written by tools/setup.sh of the workspace
+.claude/settings.local.json
