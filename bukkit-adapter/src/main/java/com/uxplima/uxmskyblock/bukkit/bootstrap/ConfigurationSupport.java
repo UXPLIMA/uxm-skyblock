@@ -50,8 +50,25 @@ final class ConfigurationSupport {
                 LOGGER.warning("Failed listing the messages folder " + messagesDir + ": " + e.getMessage());
             }
         }
+        java.util.Set<java.util.Locale> found = new java.util.HashSet<>();
+        found.add(language.defaultLocale());
+        found.add(java.util.Locale.ENGLISH);
+        found.add(java.util.Locale.forLanguageTag("tr"));
+        if (Files.isDirectory(messagesDir)) {
+            try (java.util.stream.Stream<Path> files = Files.list(messagesDir)) {
+                files.map(file -> file.getFileName().toString())
+                        .filter(name -> name.startsWith("messages_") && name.endsWith(".conf"))
+                        .map(name -> name.substring("messages_".length(), name.length() - ".conf".length()))
+                        .map(tag -> java.util.Locale.forLanguageTag(tag.replace('_', '-')))
+                        .forEach(found::add);
+            } catch (IOException e) {
+                LOGGER.warning("Failed listing the messages folder " + messagesDir + ": " + e.getMessage());
+            }
+        }
+        com.uxplima.uxmskyblock.bukkit.i18n.PlayerLanguage players =
+                com.uxplima.uxmskyblock.bukkit.i18n.PlayerLanguage.of(dataDir, language.settings(), found);
         // The same theme the menus read, so every line and every tile is painted from one file.
-        return Messages.of(provider, language, ThemeSource.load(dataDir));
+        return new Messages(provider, players.resolver(), ThemeSource.load(dataDir), players);
     }
 
     /** Fail-closed schema and constraint validation of every value {@code wiring} read. */
