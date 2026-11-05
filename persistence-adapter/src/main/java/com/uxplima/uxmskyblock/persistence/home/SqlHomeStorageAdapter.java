@@ -23,7 +23,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 
 /**
- * SQL persistence adapter for multi-home storage (Section 2.42).
+ * SQL persistence adapter for multi-home storage.
  */
 public final class SqlHomeStorageAdapter implements HomeStoragePort {
 

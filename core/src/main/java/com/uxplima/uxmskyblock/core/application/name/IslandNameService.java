@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Application service managing island naming lifecycle, uniqueness checks,
- * profanity suppression, and audit event dispatching (Section 2.41).
+ * profanity suppression, and audit event dispatching.
  */
 public final class IslandNameService {
 

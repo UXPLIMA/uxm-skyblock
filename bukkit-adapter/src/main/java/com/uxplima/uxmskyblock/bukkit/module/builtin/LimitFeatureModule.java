@@ -9,7 +9,7 @@ import com.uxplima.uxmskyblock.core.application.module.ModuleContext;
 import com.uxplima.uxmskyblock.core.domain.module.ModuleDescriptor;
 
 /**
- * Built-in feature module managing hardware and anti-lag tile entity and entity limits (Section 2.31).
+ * Built-in feature module managing hardware and anti-lag tile entity and entity limits.
  */
 public final class LimitFeatureModule extends AbstractFeatureModule {
 

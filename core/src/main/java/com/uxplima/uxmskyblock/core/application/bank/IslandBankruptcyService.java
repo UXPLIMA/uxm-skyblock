@@ -26,7 +26,7 @@ import com.uxplima.uxmskyblock.core.domain.session.ServerNodeId;
 
 /**
  * Core application service managing island upkeep maintenance, two-stage bankruptcy lifecycles
- * (GRACE and LOCKED), debt accumulation, and instant atomic remediation (Section 2.39).
+ * (GRACE and LOCKED), debt accumulation, and instant atomic remediation.
  */
 public final class IslandBankruptcyService {
 

@@ -15,7 +15,7 @@ import com.uxplima.uxmskyblock.core.domain.booster.CategoryBoosterPolicy;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Immutable configuration record for island boosters and multipliers subsystem (Section 2.34).
+ * Immutable configuration record for island boosters and multipliers subsystem.
  */
 public record BoosterConfiguration(
         boolean pauseWhenEmpty,
@@ -100,21 +100,11 @@ public record BoosterConfiguration(
                     .orElse(BoosterCalculation.ADDITIVE);
             double maxMultiplier = catNode.node("max-multiplier").getDouble(5.0);
             Duration maxDuration = parseDuration(catNode.node("max-duration"), Duration.ofDays(7));
-            double defaultMultiplier = catNode.node("default-multiplier").getDouble(1.5);
-            Duration defaultDuration = parseDuration(catNode.node("default-duration"), Duration.ofHours(1));
 
             map.put(
                     category,
                     new CategoryBoosterPolicy(
-                            category,
-                            enabled,
-                            stackMode,
-                            durationPolicy,
-                            calculation,
-                            maxMultiplier,
-                            maxDuration,
-                            defaultMultiplier,
-                            defaultDuration));
+                            category, enabled, stackMode, durationPolicy, calculation, maxMultiplier, maxDuration));
         }
 
         return new BoosterConfiguration(pauseWhenEmpty, cleanInterval, multiplierCacheTtl, map);

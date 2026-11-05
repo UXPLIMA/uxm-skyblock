@@ -10,8 +10,8 @@ import com.uxplima.uxmskyblock.core.domain.webmap.WebMapMarker;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise web map integration service preparing multi-layer polygon descriptors
- * and rich HTML tooltips for web map renderers (Section 2.42).
+ * Web map integration service preparing multi-layer polygon descriptors
+ * and rich HTML tooltips for web map renderers.
  */
 public final class IslandWebMapService {
 

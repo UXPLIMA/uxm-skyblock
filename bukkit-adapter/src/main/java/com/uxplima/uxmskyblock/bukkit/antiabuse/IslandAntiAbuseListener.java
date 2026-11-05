@@ -30,7 +30,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandMember;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Inbound Bukkit listener enforcing island creation quarantine restrictions (Section 2.32):
+ * Inbound Bukkit listener enforcing island creation quarantine restrictions:
  * 1. Cancels item dropping within quarantined island bounds.
  * 2. Locks visitor entry to quarantined islands until the quarantine window expires.
  */

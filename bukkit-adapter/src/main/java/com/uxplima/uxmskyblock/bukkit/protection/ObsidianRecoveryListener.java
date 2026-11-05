@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import com.uxplima.uxmskyblock.bukkit.config.ProtectionConfiguration;
 
 /**
- * Anti-Exploit Obsidian Recovery Listener (Section 2.42 item 1).
+ * Anti-Exploit Obsidian Recovery Listener.
  * Tracks accidental cobblestone generator water-lava collision forming obsidian via transient timestamps (60s TTL).
  * Allows recovering lava into empty buckets with sound cues and smoke particle bursts,
  * while preventing placed obsidian dupe exploits.

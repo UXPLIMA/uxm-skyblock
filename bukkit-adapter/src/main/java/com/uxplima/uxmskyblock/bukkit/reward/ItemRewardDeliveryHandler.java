@@ -41,7 +41,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Production reward delivery handler for item grants.
  *
- * <p>Enforces the durability invariant from {@code GAMEMODE_ARCHITECTURE.md} Section 11.3:
+ * <p>It holds the durability invariant:
  * <ul>
  *   <li>Requires an active player session; if offline, delivery fails safely so the item remains
  *       persisted in the durable reward inbox.</li>

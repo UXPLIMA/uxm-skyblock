@@ -14,7 +14,7 @@ import com.uxplima.uxmskyblock.core.domain.shop.PricingCurve;
 import com.uxplima.uxmskyblock.core.domain.shop.ShopItemPrice;
 
 /**
- * Enterprise dynamic economy engine tracking market commodity supply/demand volumes,
+ * Dynamic economy engine tracking market commodity supply/demand volumes,
  * computing bounded pricing curves, and damping speculation swings.
  */
 public final class DynamicPricingEngine {

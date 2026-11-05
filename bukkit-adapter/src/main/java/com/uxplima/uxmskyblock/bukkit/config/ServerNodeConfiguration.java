@@ -187,15 +187,12 @@ public record ServerNodeConfiguration(
     public static ServerNodeConfiguration load(ConfigurationNode rootNode) {
         Objects.requireNonNull(rootNode, "rootNode must not be null");
 
-        ConfigurationNode nodeConfig = rootNode.node("server-node");
-        String rawNodeId = nodeConfig.node("id").getString();
-        if (rawNodeId == null || rawNodeId.isBlank()) {
-            rawNodeId = rootNode.node("node-id").getString();
-        }
+        ConfigurationNode nodeConfig = rootNode.node("network");
+        String rawNodeId = nodeConfig.node("server-name").getString();
 
         if (rawNodeId == null || rawNodeId.isBlank()) {
             throw new IllegalStateException(
-                    "Server node identity is missing or blank! A non-empty 'server-node.id' must be configured in configuration.");
+                    "Server node identity is missing or blank! A non-empty 'network.server-name' must be set in config.conf.");
         }
 
         String rawWorldName = nodeConfig.node("world-name").getString();

@@ -9,7 +9,7 @@ import com.uxplima.uxmskyblock.core.application.module.ModuleContext;
 import com.uxplima.uxmskyblock.core.domain.module.ModuleDescriptor;
 
 /**
- * Built-in feature module managing anti-alt and starter economy protection (Section 2.32).
+ * Built-in feature module managing anti-alt and starter economy protection.
  */
 public final class AntiAbuseFeatureModule extends AbstractFeatureModule {
 

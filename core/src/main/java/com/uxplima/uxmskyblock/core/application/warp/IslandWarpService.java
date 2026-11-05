@@ -33,7 +33,7 @@ import com.uxplima.uxmskyblock.core.domain.warp.WarpOutsideIslandException;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise domain service governing named island warps, Folia safe teleport anti-trap evaluation,
+ * Domain service governing named island warps, Folia safe teleport anti-trap evaluation,
  * visitor security, and public community explorer indexing.
  */
 public final class IslandWarpService {

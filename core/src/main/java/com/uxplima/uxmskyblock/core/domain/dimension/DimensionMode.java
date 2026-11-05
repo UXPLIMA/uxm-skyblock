@@ -1,7 +1,7 @@
 package com.uxplima.uxmskyblock.core.domain.dimension;
 
 /**
- * Operational mode governing multi-dimensional access and territory mapping (Section 2.37).
+ * Operational mode governing multi-dimensional access and territory mapping.
  */
 public enum DimensionMode {
     /**

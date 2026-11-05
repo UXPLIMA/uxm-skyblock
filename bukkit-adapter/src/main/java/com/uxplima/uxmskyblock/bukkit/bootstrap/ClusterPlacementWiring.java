@@ -36,7 +36,7 @@ final class ClusterPlacementWiring {
         ServerNodeConfiguration.Placement settings = node.placement();
         this.strategies = PlacementStrategies.shipped(settings.msptCeiling());
         if (strategies.named(settings.strategy()).isEmpty()) {
-            LOGGER.info(() -> "server-node.placement.strategy names '" + settings.strategy()
+            LOGGER.info(() -> "network.placement.strategy names '" + settings.strategy()
                     + "', which is not shipped. Another plugin has to register it, or least-loaded is used.");
         }
         this.presence = new ClusterPresence(nodes, node.nodeId(), node.worldName(), settings.capacity(), averageMspt);

@@ -33,7 +33,7 @@ import com.uxplima.uxmskyblock.core.domain.vault.VaultSessionId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise domain service orchestrating shared island vault pages, pessimistic edit session leases,
+ * Domain service orchestrating shared island vault pages, pessimistic edit session leases,
  * write-ahead escrow transfers, dual-slot recovery, and rolling audit logs.
  */
 public final class IslandVaultService {

@@ -8,7 +8,7 @@ import java.util.Optional;
 import com.uxplima.uxmskyblock.core.domain.dimension.DimensionId;
 
 /**
- * Multi-dimension starter asset bundle mapping assets and typed creation actions (Section 2.42).
+ * Multi-dimension starter asset bundle mapping assets and typed creation actions.
  */
 public record StartTemplateBundle(
         String id,

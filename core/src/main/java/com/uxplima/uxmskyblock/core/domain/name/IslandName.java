@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * Value object representing a validated custom island name (Section 2.41).
+ * Value object representing a validated custom island name.
  * Constraints:
  * <ul>
  *   <li>Length: 3 to 16 characters</li>

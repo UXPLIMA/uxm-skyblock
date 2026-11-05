@@ -20,8 +20,8 @@ import com.uxplima.uxmskyblock.core.domain.event.OutboxEventRecord;
 import com.uxplima.uxmskyblock.core.domain.event.OutboxStatus;
 
 /**
- * Enterprise Redis Streams implementation of {@link DurableEventTransportPort}
- * located in the infrastructure/adapter layer, adhering to Section 2.15 & Section 11:
+ * Redis Streams implementation of {@link DurableEventTransportPort}
+ * in the adapter layer:
  * <ul>
  *   <li>Publishes to domain event stream (default: "uxmskyblock:stream:domain_events") via XADD.</li>
  *   <li>Consumer group reads with at-least-once delivery (XREADGROUP).</li>

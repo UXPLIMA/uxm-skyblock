@@ -57,7 +57,6 @@ public final class GameplayProtectionWiring {
         this.obsidianRecoveryListener.useEffects(config.effectsConfig(), effectPlayer);
         this.voidProtectionListener = new VoidProtectionListener(
                 config.protectionConfig(),
-                config.settingsConfig(),
                 protectionListener::findIslandAt,
                 java.time.Clock.systemUTC(),
                 config.messages());

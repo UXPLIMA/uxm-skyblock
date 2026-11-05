@@ -7,7 +7,7 @@ import com.uxplima.uxmskyblock.core.domain.warp.WarpLocation;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise engine validating teleport destination safety and locating nearest safe air columns
+ * Engine validating teleport destination safety and locating nearest safe air columns
  * with solid bases within a bounding box to prevent visitor trapping or lethal drops.
  */
 public final class SafeTeleportEngine {

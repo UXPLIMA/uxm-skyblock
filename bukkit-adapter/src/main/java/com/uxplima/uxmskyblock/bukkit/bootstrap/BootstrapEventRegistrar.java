@@ -260,13 +260,12 @@ public final class BootstrapEventRegistrar {
             pm.registerEvents(gameplayWiring.bankruptcyListener(), plugin);
             gameplayWiring.arrivalWatch().admit(gameplayWiring.bankruptcyListener());
         }
-        if (configWiring.protectionConfig().obsidianRecoveryEnabled()
-                && configWiring.settingsConfig().obsidianToLava()) {
+        if (configWiring.protectionConfig().obsidianRecoveryEnabled()) {
             pm.registerEvents(gameplayWiring.obsidianRecoveryListener(), plugin);
         }
         if (configWiring.protectionConfig().voidRecoveryEnabled()
-                && (configWiring.settingsConfig().voidTeleportMembers()
-                        || configWiring.settingsConfig().voidTeleportVisitors())) {
+                && (configWiring.protectionConfig().voidRecoveryMembers()
+                        || configWiring.protectionConfig().voidRecoveryVisitors())) {
             pm.registerEvents(gameplayWiring.voidProtectionListener(), plugin);
         }
         if (!configWiring.interactablesConfig().isEmpty()) {
@@ -276,7 +275,7 @@ public final class BootstrapEventRegistrar {
             pm.registerEvents(gameplayWiring.kineticWardListener(), plugin);
             gameplayWiring.arrivalWatch().observe(gameplayWiring.kineticWardListener());
         }
-        if (configWiring.settingsConfig().disableRedstoneOffline()) {
+        if (configWiring.settingsConfig().anythingOffline()) {
             pm.registerEvents(gameplayWiring.redstoneOptimizationListener(), plugin);
         }
         if (!configWiring.worldConfig().suppressedStructures().isEmpty()) {

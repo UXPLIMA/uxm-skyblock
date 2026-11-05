@@ -17,9 +17,9 @@ import com.uxplima.uxmskyblock.core.domain.reward.RewardGrantExpiredException;
 import com.uxplima.uxmskyblock.core.domain.reward.RewardGrantState;
 
 /**
- * Enterprise orchestrator governing multi-protocol delivery of reward components.
+ * Orchestrator governing multi-protocol delivery of reward components.
  *
- * <p>Enforces the core invariants from {@code GAMEMODE_ARCHITECTURE.md} Section 11.3:
+ * <p>It holds these invariants:
  * <ul>
  *   <li><b>Isolation Invariant:</b> Delivery operations are keyed by {@code componentOperationId}
  *       derived from {@code grantId + componentIndex}, never ambiguous parent grant ID.</li>

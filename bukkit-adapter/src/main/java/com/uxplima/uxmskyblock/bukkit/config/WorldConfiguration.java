@@ -9,7 +9,7 @@ import java.util.Set;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Void-world optimization and structure suppression configuration (Section 2.42).
+ * Void-world optimization and structure suppression configuration.
  */
 public final class WorldConfiguration {
 

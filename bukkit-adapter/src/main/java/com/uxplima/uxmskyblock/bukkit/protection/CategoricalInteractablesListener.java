@@ -30,7 +30,7 @@ import com.uxplima.uxmskyblock.core.domain.session.PlayerSessionRecord;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise categorical interactables listener (Section 2.42 item 7).
+ * Categorical interactables listener.
  * Maps right-click interactions on doors, redstone triggers, containers, and workstations
  * to granular permission keys rather than generic untyped interaction.
  */

@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 /**
- * Categorical bankruptcy and upkeep states for an island (Section 2.39).
+ * Categorical bankruptcy and upkeep states for an island.
  */
 public enum BankruptcyStatus {
 

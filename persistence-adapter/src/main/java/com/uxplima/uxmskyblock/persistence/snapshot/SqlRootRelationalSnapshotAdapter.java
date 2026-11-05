@@ -30,7 +30,7 @@ import com.uxplima.uxmskyblock.core.domain.gamemode.PrimaryGameplayRootRef;
 import com.uxplima.uxmskyblock.core.domain.snapshot.RestoreMode;
 
 /**
- * SQL persistence adapter for capturing and restoring root-scoped relational data snapshots (Section 2.29).
+ * SQL persistence adapter for capturing and restoring root-scoped relational data snapshots.
  *
  * <p>Pure SQL relational persistence without any Bukkit or Paper world dependencies.
  */

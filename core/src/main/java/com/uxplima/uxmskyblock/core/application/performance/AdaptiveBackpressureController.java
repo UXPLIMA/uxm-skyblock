@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.function.DoubleSupplier;
 
 /**
- * Enterprise Folia adaptive backpressure controller (Section 2.42).
+ * Folia adaptive backpressure controller.
  * Dynamically adjusts block pasting and chunk deletion batch sizes based on live TPS feedback
  * to protect region tick cadence from degradation.
  */

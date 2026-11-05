@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.name.IslandName;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Outbound persistence port for custom island names (Section 2.41).
+ * Outbound persistence port for custom island names.
  */
 public interface IslandNameStoragePort {
 

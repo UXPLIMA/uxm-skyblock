@@ -71,7 +71,7 @@ public final class IslandPlacement {
     private PlacementStrategy strategy() {
         return strategies.named(strategyName).orElseGet(() -> {
             if (warned.compareAndSet(false, true)) {
-                LOGGER.warning(() -> "server-node.placement.strategy names '" + strategyName
+                LOGGER.warning(() -> "network.placement.strategy names '" + strategyName
                         + "', which no plugin registered. Placing by " + PlacementStrategies.LEAST_LOADED + ". Known: "
                         + strategies.names());
             }

@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.core.application.snapshot;
 import com.uxplima.uxmskyblock.core.domain.gamemode.PrimaryGameplayRootRef;
 
 /**
- * Coarse application-level coordinator façade composing relational and world dimension snapshot ports (Section 2.29).
+ * Coarse application-level coordinator façade composing relational and world dimension snapshot ports.
  */
 public interface RootStateSnapshotPort {
 

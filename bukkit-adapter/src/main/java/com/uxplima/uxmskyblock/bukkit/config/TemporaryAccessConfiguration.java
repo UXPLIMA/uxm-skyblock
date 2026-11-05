@@ -9,14 +9,13 @@ import com.uxplima.uxmskyblock.core.domain.permission.StandardPermissions;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Configuration holder for temporary access grants subsystem (ACC-001).
+ * Configuration holder for temporary access grants subsystem.
  */
 public record TemporaryAccessConfiguration(
         boolean enabled,
         Duration defaultDuration,
         Duration maxDuration,
         Duration purgeInterval,
-        boolean enforceRulesetIsolation,
         Duration grantLookupTtl,
         java.util.Set<PermissionKey> trustPermissions) {
 
@@ -27,7 +26,6 @@ public record TemporaryAccessConfiguration(
     public static final Duration DEFAULT_DURATION = Duration.ofHours(1);
     public static final Duration DEFAULT_MAX_DURATION = Duration.ofDays(1);
     public static final Duration DEFAULT_PURGE_INTERVAL = Duration.ofMinutes(1);
-    public static final boolean DEFAULT_ENFORCE_RULESET_ISOLATION = true;
     public static final Duration DEFAULT_GRANT_LOOKUP_TTL =
             com.uxplima.uxmskyblock.core.application.access.TemporaryAccessService.DEFAULT_GRANT_LOOKUP_TTL;
 
@@ -78,7 +76,6 @@ public record TemporaryAccessConfiguration(
                 DEFAULT_DURATION,
                 DEFAULT_MAX_DURATION,
                 DEFAULT_PURGE_INTERVAL,
-                DEFAULT_ENFORCE_RULESET_ISOLATION,
                 DEFAULT_GRANT_LOOKUP_TTL,
                 DEFAULT_TRUST_PERMISSIONS);
     }
@@ -104,8 +101,6 @@ public record TemporaryAccessConfiguration(
         Duration purgeInterval =
                 purgeRaw != null && !purgeRaw.isBlank() ? Durations.parse(purgeRaw) : DEFAULT_PURGE_INTERVAL;
 
-        boolean enforceIsolation = node.node("enforce-ruleset-isolation").getBoolean(DEFAULT_ENFORCE_RULESET_ISOLATION);
-
         String ttlRaw = node.node("grant-lookup-ttl").getString();
         Duration grantLookupTtl =
                 ttlRaw != null && !ttlRaw.isBlank() ? Durations.parse(ttlRaw) : DEFAULT_GRANT_LOOKUP_TTL;
@@ -113,13 +108,7 @@ public record TemporaryAccessConfiguration(
         java.util.Set<PermissionKey> trustPermissions = readTrustPermissions(node.node("trust-permissions"));
 
         return new TemporaryAccessConfiguration(
-                enabled,
-                defaultDuration,
-                maxDuration,
-                purgeInterval,
-                enforceIsolation,
-                grantLookupTtl,
-                trustPermissions);
+                enabled, defaultDuration, maxDuration, purgeInterval, grantLookupTtl, trustPermissions);
     }
 
     /**

@@ -4,7 +4,7 @@ import com.uxplima.uxmskyblock.core.domain.gamemode.PrimaryGameplayRootRef;
 import com.uxplima.uxmskyblock.core.domain.snapshot.RestoreMode;
 
 /**
- * Outbound driven port for root-scoped relational data snapshots (Section 2.29).
+ * Outbound driven port for root-scoped relational data snapshots.
  *
  * <p>Implemented strictly by :persistence-adapter using pure SQL without any Bukkit or world dependencies.
  */

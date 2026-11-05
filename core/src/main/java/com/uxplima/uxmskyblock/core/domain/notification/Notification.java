@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Domain entity representing a durable offline notification (Section 2.18 & 2.42).
+ * Domain entity representing a durable offline notification.
  */
 public record Notification(
         UUID notificationId,

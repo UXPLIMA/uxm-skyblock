@@ -18,7 +18,7 @@ import com.uxplima.uxmskyblock.core.domain.reward.RewardGrantState;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise application service governing the issuance, inspection, expiration,
+ * Application service governing the issuance, inspection, expiration,
  * and multi-protocol claiming of offline reward grants.
  */
 public final class RewardInboxService {

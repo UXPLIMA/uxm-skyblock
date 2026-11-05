@@ -31,7 +31,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Embedded lightweight REST server providing health, metrics, island queries,
- * bank operations, and leaderboard access (Section 2.44).
+ * bank operations, and leaderboard access.
  */
 public final class RestServer implements AutoCloseable {
 

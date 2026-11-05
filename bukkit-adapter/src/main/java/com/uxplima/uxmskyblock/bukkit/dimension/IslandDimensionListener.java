@@ -32,7 +32,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandLocation;
 
 /**
  * Inbound Bukkit listener intercepting portal travel and routing players to coordinate-mirrored
- * island dimensions or shared worlds (Sections 2.27 & 2.37).
+ * island dimensions or shared worlds.
  */
 public final class IslandDimensionListener implements Listener {
 

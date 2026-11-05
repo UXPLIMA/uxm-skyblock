@@ -10,7 +10,7 @@ import org.bukkit.event.world.AsyncStructureSpawnEvent;
 import com.uxplima.uxmskyblock.bukkit.config.WorldConfiguration;
 
 /**
- * Native Async Structure Suppression Listener (Section 2.42 item 5).
+ * Native Async Structure Suppression Listener.
  * Cancels expensive void-world structure generation queries asynchronously
  * to prevent multi-second main/region thread tick freezes.
  */

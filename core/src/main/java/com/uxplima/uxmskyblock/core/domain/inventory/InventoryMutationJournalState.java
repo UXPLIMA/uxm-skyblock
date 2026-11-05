@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.core.domain.inventory;
 /**
  * Source-frozen lifecycle states for {@code inventory_mutation_journals}.
  *
- * <p>Canonical states per {@code docs/PERSISTENCE_SPECIFICATION.md} and {@code docs/GAMEMODE_ARCHITECTURE.md}:
+ * <p>The states a journal entry passes through:
  * <ul>
  *   <li>{@link #INTENT}: Write-ahead intent persisted; no live mutation may execute before this state.</li>
  *   <li>{@link #APPLYING}: Live in-memory slot mutation is being applied across execution contexts.</li>

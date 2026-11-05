@@ -12,7 +12,7 @@ import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Configuration holder for hardware anti-lag tile and entity limits (Section 2.31).
+ * Configuration holder for hardware anti-lag tile and entity limits.
  */
 public record LimitConfiguration(boolean enabled, String bypassPermission, Map<LimitType, LimitQuota> quotas) {
 

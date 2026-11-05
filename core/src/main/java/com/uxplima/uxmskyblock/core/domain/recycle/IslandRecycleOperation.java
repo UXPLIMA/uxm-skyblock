@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.PlayerUuid;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise audit and transactional record tracking the multi-step lifecycle
+ * Audit and transactional record tracking the multi-step lifecycle
  * of an island recycle operation.
  */
 public record IslandRecycleOperation(

@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 
 /**
- * Web map adapter integrating with the BlueMap plugin (Section 2.42).
+ * Web map adapter integrating with the BlueMap plugin.
  *
  * <p>Uses reflection to avoid compile-time or runtime hard dependencies on the BlueMap JAR.
  */

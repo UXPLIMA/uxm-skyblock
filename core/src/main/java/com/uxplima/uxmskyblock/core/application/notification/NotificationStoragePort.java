@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 import com.uxplima.uxmskyblock.core.domain.notification.Notification;
 
 /**
- * Storage port for durable offline notifications (Section 2.18 & 2.42).
+ * Storage port for durable offline notifications.
  */
 public interface NotificationStoragePort {
 

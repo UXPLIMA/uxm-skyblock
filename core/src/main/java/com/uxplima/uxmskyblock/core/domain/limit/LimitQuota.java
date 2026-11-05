@@ -4,7 +4,7 @@ import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Immutable quota definition for a specific limit type (Section 2.31).
+ * Immutable quota definition for a specific limit type.
  *
  * @param baseLimit initial quota available to un-upgraded islands
  * @param upgradeId optional upgrade identifier that dynamically increases the limit

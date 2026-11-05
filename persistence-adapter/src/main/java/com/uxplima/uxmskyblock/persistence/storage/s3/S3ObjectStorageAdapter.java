@@ -32,7 +32,7 @@ import com.uxplima.uxmskyblock.core.domain.storage.StorageChecksumMismatchExcept
 import com.uxplima.uxmskyblock.core.domain.storage.StorageObjectMetadata;
 
 /**
- * Enterprise S3-compatible remote object storage adapter.
+ * S3-compatible remote object storage adapter.
  *
  * <p>Supports AWS S3, Cloudflare R2, and generic S3-compatible endpoints with bounded
  * streaming, multipart transfers, SHA-256 application checksum validation, and strict credential redaction.

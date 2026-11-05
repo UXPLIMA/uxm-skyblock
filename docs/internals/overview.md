@@ -28,7 +28,7 @@ Configuration is read into immutable snapshots and swapped whole on reload.
 
 ## Several servers
 
-With `server-node.clustered = true`, nodes share one database and one Redis. A node holds an island through a
+With `network.clustered = true`, nodes share one database and one Redis. A node holds an island through a
 lease it renews (`authority-lease`); a visitor is routed to the node that holds the island, or to one a
 placement strategy picks when that node stopped.
 

@@ -6,15 +6,18 @@ import java.util.Objects;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Enterprise protection policies and anti-exploit configuration (Section 2.42).
+ * Protection policies and anti-exploit configuration.
  */
 public record ProtectionConfiguration(
         boolean obsidianRecoveryEnabled,
         boolean obsidianRecoveryAccidentalOnly,
         Duration obsidianRecoveryExpiration,
         boolean voidRecoveryEnabled,
+        boolean voidRecoveryMembers,
+        boolean voidRecoveryVisitors,
         int voidRecoveryThresholdY,
         Duration voidRecoveryFallDamageShield,
+        Duration voidRecoveryPvpShield,
         boolean kineticWardEnabled,
         double kineticWardRadius,
         double kineticWardForce,
@@ -27,6 +30,7 @@ public record ProtectionConfiguration(
     public static final boolean DEFAULT_VOID_ENABLED = true;
     public static final int DEFAULT_VOID_THRESHOLD_Y = -64;
     public static final Duration DEFAULT_VOID_FALL_SHIELD = Duration.ofSeconds(10);
+    public static final Duration DEFAULT_VOID_PVP_SHIELD = Duration.ofSeconds(10);
 
     public static final boolean DEFAULT_WARD_ENABLED = true;
     public static final double DEFAULT_WARD_RADIUS = 5.0;
@@ -39,8 +43,11 @@ public record ProtectionConfiguration(
                 DEFAULT_OBSIDIAN_ACCIDENTAL,
                 DEFAULT_OBSIDIAN_EXPIRATION,
                 DEFAULT_VOID_ENABLED,
+                true,
+                true,
                 DEFAULT_VOID_THRESHOLD_Y,
                 DEFAULT_VOID_FALL_SHIELD,
+                DEFAULT_VOID_PVP_SHIELD,
                 DEFAULT_WARD_ENABLED,
                 DEFAULT_WARD_RADIUS,
                 DEFAULT_WARD_FORCE,
@@ -61,7 +68,10 @@ public record ProtectionConfiguration(
         ConfigurationNode voidNode = rootNode.node("void-recovery");
         boolean voidEnabled = voidNode.node("enabled").getBoolean(DEFAULT_VOID_ENABLED);
         int voidThresholdY = voidNode.node("threshold-y").getInt(DEFAULT_VOID_THRESHOLD_Y);
+        boolean voidMembers = voidNode.node("members").getBoolean(true);
+        boolean voidVisitors = voidNode.node("visitors").getBoolean(true);
         int voidShieldSec = voidNode.node("fall-damage-shield-seconds").getInt(10);
+        int voidPvpShieldSec = Math.max(0, voidNode.node("pvp-shield-seconds").getInt(10));
 
         ConfigurationNode wardNode = rootNode.node("kinetic-ward");
         boolean wardEnabled = wardNode.node("enabled").getBoolean(DEFAULT_WARD_ENABLED);
@@ -74,8 +84,11 @@ public record ProtectionConfiguration(
                 obsAccidental,
                 Duration.ofSeconds(obsExpSec),
                 voidEnabled,
+                voidMembers,
+                voidVisitors,
                 voidThresholdY,
                 Duration.ofSeconds(voidShieldSec),
+                Duration.ofSeconds(voidPvpShieldSec),
                 wardEnabled,
                 wardRadius,
                 wardForce,

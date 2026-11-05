@@ -19,7 +19,7 @@ import com.uxplima.uxmskyblock.core.domain.notification.Notification;
 import com.uxplima.uxmskyblock.core.domain.notification.NotificationCategory;
 
 /**
- * SQL persistence adapter for durable offline notifications (Section 2.18 & 2.42).
+ * SQL persistence adapter for durable offline notifications.
  */
 public final class SqlNotificationAdapter implements NotificationStoragePort {
 

@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Built-in feature module managing island bank upkeep cycles, two-stage bankruptcy
- * failure escalation (GRACE and LOCKED), and debt remediation (Section 2.39).
+ * failure escalation (GRACE and LOCKED), and debt remediation.
  */
 public final class BankUpkeepFeatureModule extends AbstractFeatureModule {
 

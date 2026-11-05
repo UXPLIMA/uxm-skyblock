@@ -21,7 +21,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandBounds;
 import com.uxplima.uxmskyblock.core.domain.limit.LimitType;
 
 /**
- * Region-aware reconciliation scanner for hardware tile and entity limits (Section 2.31).
+ * Region-aware reconciliation scanner for hardware tile and entity limits.
  *
  * <p>Dispatches chunk-by-chunk audits across Folia region threads to rebuild accurate in-memory
  * counts after server restarts or catastrophic crashes without locking server ticks.

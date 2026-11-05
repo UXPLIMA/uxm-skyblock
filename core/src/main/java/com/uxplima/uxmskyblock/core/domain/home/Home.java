@@ -7,7 +7,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 
 /**
- * Domain entity representing a named island home location (Section 2.42).
+ * Domain entity representing a named island home location.
  */
 public record Home(
         HomeId id,

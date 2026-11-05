@@ -6,7 +6,7 @@ import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Immutable mapping and gating specification for an island dimension (Section 2.37).
+ * Immutable mapping and gating specification for an island dimension.
  *
  * @param dimensionType dimensional environment
  * @param mode private island, shared wilderness, or disabled

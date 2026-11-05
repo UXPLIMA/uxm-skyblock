@@ -7,7 +7,7 @@ import com.uxplima.uxmskyblock.core.domain.bank.IslandBankruptcyRecord;
 import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 
 /**
- * Outbound persistence port for island bankruptcy records and debt tracking (Section 2.39).
+ * Outbound persistence port for island bankruptcy records and debt tracking.
  */
 public interface IslandBankruptcyStoragePort {
 

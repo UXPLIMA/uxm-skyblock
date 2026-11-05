@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Supported Minecraft dimensional environments for skyblock islands (Sections 2.27 & 2.37).
+ * Supported Minecraft dimensional environments for skyblock islands.
  */
 public enum IslandDimensionType {
     OVERWORLD,

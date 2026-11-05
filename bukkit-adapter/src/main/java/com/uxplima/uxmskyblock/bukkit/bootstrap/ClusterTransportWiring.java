@@ -23,8 +23,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Encapsulates cluster transport infrastructure (Redis Streams, pub/sub chat, cluster routing directory)
- * adhering to Sections 10, 11, 12, 13, and 14.
+ * Encapsulates cluster transport infrastructure (Redis Streams, pub/sub chat, cluster routing directory).
  *
  * <p>Enforces strict fail-closed semantics: when {@link ServerNodeConfiguration#isClustered()} is true,
  * any failure to establish or verify Redis connectivity throws {@link IllegalStateException} immediately,
@@ -70,8 +69,7 @@ public final class ClusterTransportWiring implements AutoCloseable {
         if (nodeConfig.isClustered()) {
             String redisUri = nodeConfig.redisUri();
             if (redisUri == null || redisUri.isBlank()) {
-                throw new IllegalStateException(
-                        "Fail-closed: Cluster mode is enabled but server-node.redis-uri is blank!");
+                throw new IllegalStateException("Fail-closed: Cluster mode is enabled but network.redis-uri is blank!");
             }
 
             try {
