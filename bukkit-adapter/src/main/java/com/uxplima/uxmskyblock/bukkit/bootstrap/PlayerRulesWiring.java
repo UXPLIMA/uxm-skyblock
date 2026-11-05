@@ -88,7 +88,10 @@ final class PlayerRulesWiring {
                         scheduler,
                         player -> java.util.Optional.ofNullable(org.bukkit.Bukkit.getOfflinePlayer(player.value())
                                 .getName()),
-                        line -> org.bukkit.Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), line)));
+                        // Folia runs a console command on the global region only, and a mission pays out on
+                        // whichever thread finished it.
+                        line -> scheduler.onGlobal(
+                                () -> org.bukkit.Bukkit.dispatchCommand(org.bukkit.Bukkit.getConsoleSender(), line))));
 
         this.islandEffects = new com.uxplima.uxmskyblock.bukkit.islandeffect.IslandEffects(
                 config.islandEffectsConfig(),
