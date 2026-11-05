@@ -16,7 +16,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.PlayerUuid;
 
 /**
- * Enterprise domain application service providing anti-alt and starter economy protection:
+ * Domain application service providing anti-alt and starter economy protection:
  * - Hard reset inventory/enderchest/equipment purge enforcement
  * - Island creation quarantine transfer window (item drop & visitor access block)
  * - Strict reset cooldowns and rolling daily reset quotas

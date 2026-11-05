@@ -25,7 +25,7 @@ import com.uxplima.uxmskyblock.core.domain.world.RecycledSlot;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise domain application service orchestrating safe island deletion, multi-step
+ * Domain application service orchestrating safe island deletion, multi-step
  * cryptographic confirmation challenges, pre-deletion disaster recovery backups,
  * Folia-native asynchronous chunk voiding, transactional state tracking, and Archimedean spiral slot recycling.
  */

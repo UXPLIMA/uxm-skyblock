@@ -6,7 +6,7 @@ import com.uxplima.uxmskyblock.core.domain.dimension.IslandDimensionType;
 import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 
 /**
- * Outbound persistence port for durable tracking of island generated dimension platforms (Sections 2.27 & 2.37).
+ * Outbound persistence port for durable tracking of island generated dimension platforms.
  */
 public interface IslandDimensionStoragePort {
 

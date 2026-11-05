@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.core.domain.webmap;
 import java.util.Objects;
 
 /**
- * Domain model representing a rendered web map polygon marker for Dynmap, BlueMap, or Pl3xMap (Section 2.42).
+ * Domain model representing a rendered web map polygon marker for Dynmap, BlueMap, or Pl3xMap.
  */
 public record WebMapMarker(
         String markerId,

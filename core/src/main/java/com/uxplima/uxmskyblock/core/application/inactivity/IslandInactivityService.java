@@ -29,7 +29,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandRole;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise domain application service governing leader inactivity evaluation,
+ * Domain application service governing leader inactivity evaluation,
  * automated dynamic ownership succession hierarchy, deposed leader disposition,
  * and total team abandonment pruning / archival lifecycle.
  */

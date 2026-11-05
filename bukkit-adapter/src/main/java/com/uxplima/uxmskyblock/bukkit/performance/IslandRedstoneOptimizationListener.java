@@ -19,7 +19,7 @@ import com.uxplima.uxmskyblock.bukkit.config.SettingsConfiguration;
 import com.uxplima.uxmskyblock.core.domain.island.Island;
 
 /**
- * Performance optimization listener (Section 2.41 item 3).
+ * Performance optimization listener.
  * Suspends redstone current propagation, piston movement, and spawner operations when zero members are online.
  */
 public final class IslandRedstoneOptimizationListener implements Listener {
@@ -44,7 +44,7 @@ public final class IslandRedstoneOptimizationListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockRedstone(BlockRedstoneEvent event) {
-        if (!config.disableRedstoneOffline()) {
+        if (!config.stopRedstoneOffline()) {
             return;
         }
 
@@ -64,7 +64,7 @@ public final class IslandRedstoneOptimizationListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (!config.disableRedstoneOffline()) {
+        if (!config.stopRedstoneOffline()) {
             return;
         }
 
@@ -82,7 +82,7 @@ public final class IslandRedstoneOptimizationListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (!config.disableRedstoneOffline()) {
+        if (!config.stopRedstoneOffline()) {
             return;
         }
 
@@ -100,7 +100,7 @@ public final class IslandRedstoneOptimizationListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-        if (!config.afkDisableSpawning()) {
+        if (!config.stopSpawnersOffline()) {
             return;
         }
 

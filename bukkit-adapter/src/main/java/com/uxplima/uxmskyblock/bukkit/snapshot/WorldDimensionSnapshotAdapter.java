@@ -42,7 +42,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Bukkit/Paper adapter for extracting chunk geometry, non-air block state, and coordinating
- * Folia region threading during world dimension snapshots (Section 2.29 & Section 9).
+ * Folia region threading during world dimension snapshots.
  */
 public final class WorldDimensionSnapshotAdapter implements WorldDimensionSnapshotPort {
 

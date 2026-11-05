@@ -15,7 +15,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Domain application service recording and reading user-facing activity digests (Section 2.19 & 2.42).
+ * Domain application service recording and reading user-facing activity digests.
  */
 public final class ActivityFeedService {
 

@@ -11,7 +11,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Web map adapter integrating with the Dynmap plugin (Section 2.42).
+ * Web map adapter integrating with the Dynmap plugin.
  *
  * <p>Uses reflection to avoid compile-time or runtime hard dependencies on the Dynmap JAR.
  */

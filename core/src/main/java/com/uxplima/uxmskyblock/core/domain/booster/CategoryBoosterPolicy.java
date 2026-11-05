@@ -13,8 +13,6 @@ import java.util.Objects;
  * @param calculation calculation logic (ADDITIVE, COMPOUND)
  * @param maxMultiplier maximum cap on effective multiplier
  * @param maxDuration maximum cap on active duration
- * @param defaultMultiplier default multiplier when not explicitly specified
- * @param defaultDuration default duration when not explicitly specified
  */
 public record CategoryBoosterPolicy(
         BoosterCategory category,
@@ -23,9 +21,7 @@ public record CategoryBoosterPolicy(
         BoosterDurationPolicy durationPolicy,
         BoosterCalculation calculation,
         double maxMultiplier,
-        Duration maxDuration,
-        double defaultMultiplier,
-        Duration defaultDuration) {
+        Duration maxDuration) {
 
     public CategoryBoosterPolicy {
         Objects.requireNonNull(category, "category must not be null");
@@ -33,7 +29,6 @@ public record CategoryBoosterPolicy(
         Objects.requireNonNull(durationPolicy, "durationPolicy must not be null");
         Objects.requireNonNull(calculation, "calculation must not be null");
         Objects.requireNonNull(maxDuration, "maxDuration must not be null");
-        Objects.requireNonNull(defaultDuration, "defaultDuration must not be null");
         if (maxMultiplier <= 0) {
             throw new IllegalArgumentException("maxMultiplier must be positive");
         }
@@ -50,8 +45,6 @@ public record CategoryBoosterPolicy(
                 BoosterDurationPolicy.INDEPENDENT,
                 BoosterCalculation.ADDITIVE,
                 5.0,
-                Duration.ofDays(7),
-                1.5,
-                Duration.ofHours(1));
+                Duration.ofDays(7));
     }
 }

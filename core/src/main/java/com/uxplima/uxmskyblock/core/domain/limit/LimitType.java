@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.core.domain.limit;
 import java.util.Objects;
 
 /**
- * Types of tracked and hardware-capped blocks and entities per island (Section 2.31).
+ * Types of tracked and hardware-capped blocks and entities per island.
  */
 public enum LimitType {
     // Tile Entities / Redstone

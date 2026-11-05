@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.bukkit.webmap;
 import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 
 /**
- * Common outbound adapter port for rendering dynamic web map markers and island territories (Section 2.42).
+ * Common outbound adapter port for rendering dynamic web map markers and island territories.
  *
  * <p>Supports multi-provider installations (Dynmap, BlueMap, Pl3xMap) via a composite delegator.
  */

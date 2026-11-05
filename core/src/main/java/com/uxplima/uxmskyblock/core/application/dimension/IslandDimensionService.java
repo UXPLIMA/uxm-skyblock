@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Pure domain application service orchestrating cross-dimension travel, portal linkage,
- * upgrade progression gates, and private island coordinate mappings (Sections 2.27 & 2.37).
+ * upgrade progression gates, and private island coordinate mappings.
  */
 public final class IslandDimensionService {
 

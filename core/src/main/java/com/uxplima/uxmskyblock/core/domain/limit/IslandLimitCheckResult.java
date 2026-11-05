@@ -3,7 +3,7 @@ package com.uxplima.uxmskyblock.core.domain.limit;
 import java.util.Objects;
 
 /**
- * Outcome of evaluating an island tile or entity placement against configured limits (Section 2.31).
+ * Outcome of evaluating an island tile or entity placement against configured limits.
  */
 public sealed interface IslandLimitCheckResult {
 

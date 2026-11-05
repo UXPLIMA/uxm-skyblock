@@ -9,7 +9,7 @@ import com.uxplima.uxmskyblock.core.domain.bank.IslandUpkeepPolicy;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Configuration holder for island bank and upkeep failure policy (Section 2.39).
+ * Configuration holder for island bank and upkeep failure policy.
  */
 public record BankConfiguration(
         IslandUpkeepPolicy upkeepPolicy,

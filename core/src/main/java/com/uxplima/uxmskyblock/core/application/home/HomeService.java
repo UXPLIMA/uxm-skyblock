@@ -14,7 +14,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 
 /**
- * Domain application service managing multiple home locations and limit enforcement (Section 2.42).
+ * Domain application service managing multiple home locations and limit enforcement.
  */
 public final class HomeService {
 

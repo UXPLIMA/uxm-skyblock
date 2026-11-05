@@ -34,7 +34,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Platform adapter serializing pre-deletion disaster-recovery backup snapshots
  * into canonical BackupSet directories containing manifest.json, SHA-256 verified data files,
- * and AVAILABLE.marker (Sections 2.29, 9, and PERSISTENCE_SPECIFICATION.md).
+ * and AVAILABLE.marker.
  */
 public final class NbtIslandBackupAdapter implements IslandBackupPort {
 

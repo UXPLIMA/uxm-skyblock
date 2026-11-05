@@ -18,7 +18,7 @@ import com.uxplima.uxmskyblock.core.domain.name.IslandName;
 import org.jspecify.annotations.Nullable;
 
 /**
- * SQL persistence adapter storing custom island names in the canonical `islands.custom_name` column (Section 2.41).
+ * SQL persistence adapter storing custom island names in the canonical `islands.custom_name` column.
  */
 public final class SqlIslandNameStorageAdapter implements IslandNameStoragePort {
 

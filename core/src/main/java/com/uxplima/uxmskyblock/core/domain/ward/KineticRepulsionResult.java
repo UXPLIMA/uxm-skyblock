@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Domain model representing entities and repulsive velocities produced by a kinetic ward wave (Section 2.42).
+ * Domain model representing entities and repulsive velocities produced by a kinetic ward wave.
  */
 public record KineticRepulsionResult(List<RepulsedEntity> repulsedEntities) {
 

@@ -16,8 +16,8 @@ import io.lettuce.core.api.sync.RedisCommands;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise cluster-wide island routing directory supporting TTL expiration,
- * monotonic epoch fencing validation, and optional Redis backend distribution adhering to Section 14.
+ * Cluster-wide island routing directory supporting TTL expiration,
+ * monotonic epoch fencing validation, and optional Redis backend distribution.
  */
 public final class RedisClusterRoutingDirectoryAdapter implements ClusterRoutingDirectoryPort, AutoCloseable {
 

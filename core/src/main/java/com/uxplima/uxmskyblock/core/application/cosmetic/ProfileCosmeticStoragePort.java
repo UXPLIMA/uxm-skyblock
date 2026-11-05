@@ -8,8 +8,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Outbound application port for persistent profile cosmetic entitlements.
  *
- * <p>Enforces durable storage of cosmetic unlocks according to GAMEMODE_ARCHITECTURE.md
- * Section 11.3, ensuring cosmetic grants persist across server restarts.
+ * <p>Cosmetic unlocks are stored durably, so a grant survives a server restart.
  */
 public interface ProfileCosmeticStoragePort {
 

@@ -23,20 +23,18 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 import com.uxplima.uxmskyblock.bukkit.config.ProtectionConfiguration;
-import com.uxplima.uxmskyblock.bukkit.config.SettingsConfiguration;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 import com.uxplima.uxmskyblock.core.domain.island.Island;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise Zero-Velocity Void Recovery & Kinetic Shield Listener (Section 2.41 & Section 2.42 item 2).
+ * Zero-Velocity Void Recovery & Kinetic Shield Listener.
  * Resets falling player velocity vector to (0,0,0), clears accumulated fall distance,
  * safely teleports to island anchor, and grants 10-second fall damage and PvP invulnerability shields.
  */
 public final class VoidProtectionListener implements Listener {
 
     private final ProtectionConfiguration protectionConfig;
-    private final SettingsConfiguration settingsConfig;
     private final Function<Location, Optional<Island>> islandLookup;
     private final Clock clock;
 
@@ -53,20 +51,16 @@ public final class VoidProtectionListener implements Listener {
     private final Messages messages;
 
     public VoidProtectionListener(
-            ProtectionConfiguration protectionConfig,
-            SettingsConfiguration settingsConfig,
-            Function<Location, Optional<Island>> islandLookup) {
-        this(protectionConfig, settingsConfig, islandLookup, Clock.systemUTC(), Messages.bundled());
+            ProtectionConfiguration protectionConfig, Function<Location, Optional<Island>> islandLookup) {
+        this(protectionConfig, islandLookup, Clock.systemUTC(), Messages.bundled());
     }
 
     public VoidProtectionListener(
             ProtectionConfiguration protectionConfig,
-            SettingsConfiguration settingsConfig,
             Function<Location, Optional<Island>> islandLookup,
             Clock clock,
             Messages messages) {
         this.protectionConfig = Objects.requireNonNull(protectionConfig, "protectionConfig must not be null");
-        this.settingsConfig = Objects.requireNonNull(settingsConfig, "settingsConfig must not be null");
         this.islandLookup = Objects.requireNonNull(islandLookup, "islandLookup must not be null");
         this.clock = Objects.requireNonNull(clock, "clock must not be null");
         this.messages = Objects.requireNonNull(messages, "messages must not be null");
@@ -147,10 +141,10 @@ public final class VoidProtectionListener implements Listener {
         Optional<Island> optIsland = islandLookup.apply(loc);
         boolean isMember = optIsland.map(island -> isMember(island, player)).orElse(false);
 
-        if (isMember && !settingsConfig.voidTeleportMembers()) {
+        if (isMember && !protectionConfig.voidRecoveryMembers()) {
             return false;
         }
-        if (!isMember && !settingsConfig.voidTeleportVisitors()) {
+        if (!isMember && !protectionConfig.voidRecoveryVisitors()) {
             return false;
         }
 
@@ -195,13 +189,11 @@ public final class VoidProtectionListener implements Listener {
             throw e;
         }
 
-        // Grant 10-second fall damage shield
         Instant now = Instant.now(clock);
         fallDamageShields.put(player.getUniqueId(), now.plus(protectionConfig.voidRecoveryFallDamageShield()));
 
-        // Grant PvP invulnerability shield if enabled
-        if (settingsConfig.immuneToPvpWhenTeleport()) {
-            pvpInvulnerabilityShields.put(player.getUniqueId(), now.plus(settingsConfig.pvpTeleportInvulnerability()));
+        if (!protectionConfig.voidRecoveryPvpShield().isZero()) {
+            pvpInvulnerabilityShields.put(player.getUniqueId(), now.plus(protectionConfig.voidRecoveryPvpShield()));
         }
 
         player.sendMessage(messages.render(player, "protection.void_recovery"));
@@ -214,13 +206,6 @@ public final class VoidProtectionListener implements Listener {
         World world = centre.getWorld();
         int surface = world.getHighestBlockYAt(centre.getBlockX(), centre.getBlockZ());
         return new Location(world, centre.getX(), Math.max(65, surface + 1), centre.getZ());
-    }
-
-    public void grantTeleportInvulnerability(Player player) {
-        if (settingsConfig.immuneToPvpWhenTeleport()) {
-            pvpInvulnerabilityShields.put(
-                    player.getUniqueId(), Instant.now(clock).plus(settingsConfig.pvpTeleportInvulnerability()));
-        }
     }
 
     private boolean isMember(Island island, Player player) {

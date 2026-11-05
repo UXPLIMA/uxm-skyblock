@@ -13,7 +13,7 @@ import com.uxplima.uxmskyblock.core.domain.notification.NotificationCategory;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Domain application service handling offline notifications and delivery (Section 2.18 & 2.42).
+ * Domain application service handling offline notifications and delivery.
  */
 public final class NotificationService {
 

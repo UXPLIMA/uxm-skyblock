@@ -23,7 +23,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandRole;
 
 /**
  * Distributed implementation of {@link IslandChatTransportPort} backed by {@link RedisBus}.
- * Distributes chat frames across cluster nodes using binary Redis pub/sub adhering to Section 13.
+ * Distributes chat frames across cluster nodes using binary Redis pub/sub.
  */
 public final class RedisIslandChatTransportAdapter implements IslandChatTransportPort, AutoCloseable {
 

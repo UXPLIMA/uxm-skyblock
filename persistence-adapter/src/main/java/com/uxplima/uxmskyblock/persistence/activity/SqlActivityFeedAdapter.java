@@ -25,7 +25,7 @@ import com.uxplima.uxmskyblock.core.domain.activity.ActivityVisibility;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 
 /**
- * SQL persistence adapter for user-facing activity events feed (Section 2.19 & 2.42).
+ * SQL persistence adapter for user-facing activity events feed.
  */
 public final class SqlActivityFeedAdapter implements ActivityFeedStoragePort {
 

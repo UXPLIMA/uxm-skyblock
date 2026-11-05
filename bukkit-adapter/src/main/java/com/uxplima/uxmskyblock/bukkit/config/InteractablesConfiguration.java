@@ -15,7 +15,7 @@ import com.uxplima.uxmskyblock.core.domain.permission.StandardPermissions;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Categorical declarative interactables configuration (Section 2.42).
+ * Categorical declarative interactables configuration.
  * Groups block materials into semantic sets mapped to granular permission keys.
  */
 public final class InteractablesConfiguration {

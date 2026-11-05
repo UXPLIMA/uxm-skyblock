@@ -11,7 +11,7 @@ import com.uxplima.uxmskyblock.core.domain.module.ModuleDescriptor;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Built-in feature module managing flexible island boosters and multipliers (Section 2.34).
+ * Built-in feature module managing flexible island boosters and multipliers.
  */
 public final class BoosterFeatureModule extends AbstractFeatureModule {
 

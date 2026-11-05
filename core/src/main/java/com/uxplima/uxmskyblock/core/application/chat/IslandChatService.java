@@ -28,7 +28,7 @@ import com.uxplima.uxmskyblock.core.domain.island.IslandRole;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise domain application service orchestrating island team private chat,
+ * Domain application service orchestrating island team private chat,
  * dual dispatch modes (toggle / single-dispatch), cross-server pub/sub transport,
  * staff spy oversight, and rate limiting.
  */

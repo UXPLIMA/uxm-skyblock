@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Domain entity representing a user-facing activity feed event (Section 2.19 & 2.42).
+ * Domain entity representing a user-facing activity feed event.
  *
  * @param actorPlayer the player whose doing the line tells, when it tells one; a feed is filtered by it
  * @param amount what a bank line moved, or nothing for a line that moved nothing

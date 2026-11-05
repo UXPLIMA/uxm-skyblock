@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Performance and adaptive backpressure configuration (Section 2.42).
+ * Performance and adaptive backpressure configuration.
  */
 public record PerformanceConfiguration(
         boolean adaptiveThrottle,

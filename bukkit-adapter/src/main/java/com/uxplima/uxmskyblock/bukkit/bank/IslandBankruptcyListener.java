@@ -37,7 +37,7 @@ import com.uxplima.uxmskyblock.core.domain.island.Island;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Bukkit event listener enforcing runtime bankruptcy protections (Section 2.39):
+ * Bukkit event listener enforcing runtime bankruptcy protections:
  * <ul>
  *   <li>Suppresses mob spawners on locked islands.</li>
  *   <li>Suppresses natural crop growth on locked islands.</li>

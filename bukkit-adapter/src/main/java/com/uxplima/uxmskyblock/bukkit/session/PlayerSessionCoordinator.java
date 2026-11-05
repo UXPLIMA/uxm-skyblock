@@ -378,7 +378,7 @@ public final class PlayerSessionCoordinator {
 
                 if (outcome instanceof ProfileInventoryMutationOutcome.Success succ) {
                     session.setLastDurableVersion(succ.newVersion());
-                    // Release lease to OFFLINE state (SES-003)
+                    // Release lease to OFFLINE state
                     sessionAuthorityPort.releaseToOffline(session.playerUuid(), nodeId, session.sessionEpoch());
                 } else {
                     LOGGER.log(Level.SEVERE, "Handoff finalization flush failed on quit for {0}: {1}", new Object[] {

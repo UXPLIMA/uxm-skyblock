@@ -22,7 +22,7 @@ import com.uxplima.uxmskyblock.core.domain.ward.KineticRepulsionResult;
 import com.uxplima.uxmskyblock.core.domain.ward.KineticRepulsionResult.RepulsedEntity;
 
 /**
- * Enterprise Kinetic Ward Listener (Section 2.42 item 4).
+ * Kinetic Ward Listener.
  * Intercepts teleport arrivals and emits a non-destructive 5-block repulsive wave pushing hostile entities
  * away from the arrival coordinates with particle and sound cues, eliminating despawn anti-patterns.
  */

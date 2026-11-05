@@ -1,7 +1,7 @@
 package com.uxplima.uxmskyblock.core.domain.activity;
 
 /**
- * Event types recorded in the user-facing activity feed (Section 2.19 & 2.42).
+ * Event types recorded in the user-facing activity feed.
  */
 public enum ActivityEventType {
     MEMBER_JOINED,

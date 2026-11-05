@@ -13,7 +13,7 @@ import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Configuration holder for multi-dimension architecture, portal routing, and platform schematics (Sections 2.27 & 2.37).
+ * Configuration holder for multi-dimension architecture, portal routing, and platform schematics.
  */
 public record DimensionConfiguration(boolean enabled, Map<IslandDimensionType, DimensionMapping> mappings) {
 

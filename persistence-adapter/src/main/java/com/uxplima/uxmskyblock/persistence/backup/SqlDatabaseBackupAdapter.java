@@ -13,7 +13,7 @@ import com.uxplima.uxmskyblock.core.domain.backup.DatabaseBackupDialect;
 
 /**
  * SQL persistence adapter providing dialect-aware catastrophic whole-database
- * disaster recovery backups (Section 2.29).
+ * disaster recovery backups.
  */
 public final class SqlDatabaseBackupAdapter implements DatabaseBackupPort {
 

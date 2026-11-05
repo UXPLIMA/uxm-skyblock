@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.spongepowered.configurate.ConfigurationNode;
 
 /**
- * Immutable configuration record for anti-alt and starter economy protection (Section 2.32).
+ * Immutable configuration record for anti-alt and starter economy protection.
  */
 public record AntiAbuseConfiguration(
         boolean purgeInventoryOnReset,

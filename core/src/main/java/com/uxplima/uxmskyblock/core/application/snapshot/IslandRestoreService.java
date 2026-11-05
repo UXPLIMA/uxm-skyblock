@@ -30,7 +30,7 @@ import com.uxplima.uxmskyblock.core.domain.storage.StorageBucket;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Safety-critical restore engine coordinating fail-closed backup restore pipelines (Section 2.29).
+ * Safety-critical restore engine coordinating fail-closed backup restore pipelines.
  */
 public final class IslandRestoreService {
 

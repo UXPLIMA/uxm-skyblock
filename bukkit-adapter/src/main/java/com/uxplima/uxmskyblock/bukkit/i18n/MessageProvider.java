@@ -35,7 +35,7 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
 /**
- * Enterprise thread-safe localization provider supporting multi-locale HOCON catalogs
+ * Thread-safe localization provider supporting multi-locale HOCON catalogs
  * and Adventure MiniMessage rich component rendering with TagResolver placeholders.
  */
 public final class MessageProvider {

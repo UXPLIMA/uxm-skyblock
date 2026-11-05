@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 
 /**
- * Result outcome of an island dimension access evaluation (Sections 2.27 & 2.37).
+ * Result outcome of an island dimension access evaluation.
  */
 public sealed interface IslandDimensionAccessResult {
 

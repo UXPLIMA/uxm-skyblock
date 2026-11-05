@@ -23,8 +23,8 @@ import com.uxplima.uxmskyblock.core.domain.warp.IslandWarp;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise service presenting native Bedrock Forms (SimpleForm, ModalForm, CustomForm)
- * to Bedrock/Floodgate players without disruption to Java players (Section 2.16).
+ * Service presenting native Bedrock Forms (SimpleForm, ModalForm, CustomForm)
+ * to Bedrock/Floodgate players without disruption to Java players.
  */
 public final class BedrockFormService {
 

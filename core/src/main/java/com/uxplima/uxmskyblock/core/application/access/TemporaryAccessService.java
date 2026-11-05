@@ -26,7 +26,7 @@ import com.uxplima.uxmskyblock.core.domain.social.SocialSubjectRef;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Enterprise service governing the creation, revocation, expiry evaluation,
+ * Service governing the creation, revocation, expiry evaluation,
  * and ruleset protection for temporary access grants.
  */
 public final class TemporaryAccessService {

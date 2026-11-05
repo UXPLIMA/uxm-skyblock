@@ -7,7 +7,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 
 /**
  * Composite web map adapter that broadcasts island markers and boundaries across
- * all actively enabled web map integrations (Dynmap, BlueMap, Pl3xMap) (Section 2.42).
+ * all actively enabled web map integrations (Dynmap, BlueMap, Pl3xMap).
  */
 public final class CompositeWebMapAdapter implements WebMapAdapter {
 

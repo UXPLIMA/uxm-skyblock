@@ -4,7 +4,7 @@ import com.uxplima.uxmskyblock.core.domain.dimension.DimensionId;
 import com.uxplima.uxmskyblock.core.domain.gamemode.PrimaryGameplayRootRef;
 
 /**
- * Outbound driven port for world dimension chunk extraction and Folia thread coordination (Section 2.29).
+ * Outbound driven port for world dimension chunk extraction and Folia thread coordination.
  *
  * <p>Implemented strictly by :bukkit-adapter.
  */

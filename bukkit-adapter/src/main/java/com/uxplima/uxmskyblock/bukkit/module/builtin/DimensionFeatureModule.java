@@ -9,7 +9,7 @@ import com.uxplima.uxmskyblock.core.application.module.ModuleContext;
 import com.uxplima.uxmskyblock.core.domain.module.ModuleDescriptor;
 
 /**
- * Built-in feature module managing multi-dimension architecture, portal routing, and platform schematics (Sections 2.27 & 2.37).
+ * Built-in feature module managing multi-dimension architecture, portal routing, and platform schematics.
  */
 public final class DimensionFeatureModule extends AbstractFeatureModule {
 

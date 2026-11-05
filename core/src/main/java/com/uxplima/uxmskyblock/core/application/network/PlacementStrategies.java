@@ -10,7 +10,7 @@ import java.util.Set;
  * The placement strategies a node may be told to use, by name.
  *
  * <p>The plugin ships four. Another plugin may add its own under a name of its own, and the operator
- * picks one in {@code server-node.placement.strategy}. A name is taken once: a second strategy under
+ * picks one in {@code network.placement.strategy}. A name is taken once: a second strategy under
  * a name already held is refused, so no plugin quietly replaces another's.
  */
 public final class PlacementStrategies {

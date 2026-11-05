@@ -34,7 +34,7 @@ import com.uxplima.uxmskyblock.core.domain.limit.LimitType;
 import org.jspecify.annotations.Nullable;
 
 /**
- * High-performance event listener enforcing anti-lag tile entity and living entity caps (Section 2.31).
+ * High-performance event listener enforcing anti-lag tile entity and living entity caps.
  *
  * <p>Executes strictly within Folia owning region context, intercepting creations and decrements in O(1).
  */

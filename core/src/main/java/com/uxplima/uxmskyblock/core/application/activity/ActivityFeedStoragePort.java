@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.activity.ActivityTotal;
 import com.uxplima.uxmskyblock.core.domain.activity.ActivityTotals;
 
 /**
- * Storage port for user-facing activity events (Section 2.19 & 2.42).
+ * Storage port for user-facing activity events.
  */
 public interface ActivityFeedStoragePort {
 

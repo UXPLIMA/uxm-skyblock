@@ -1,13 +1,11 @@
 package com.uxplima.uxmskyblock.bukkit.config;
 
-import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.uxplima.uxmlib.common.Durations;
 import com.uxplima.uxmskyblock.core.domain.shop.PricingCurve;
 import org.spongepowered.configurate.ConfigurationNode;
 
@@ -24,7 +22,6 @@ import org.spongepowered.configurate.ConfigurationNode;
 public record ShopConfiguration(
         boolean enabled,
         double dampingFactor,
-        Duration asyncRefreshInterval,
         long defaultStockBaseline,
         double defaultElasticity,
         Map<String, PricingCurve> items) {
@@ -33,18 +30,13 @@ public record ShopConfiguration(
 
     public static final boolean DEFAULT_ENABLED = true;
     public static final double DEFAULT_DAMPING_FACTOR = 0.85;
-    public static final Duration DEFAULT_ASYNC_REFRESH_INTERVAL = Duration.ofMinutes(2);
     public static final long DEFAULT_STOCK_BASELINE = 100L;
     public static final double DEFAULT_ELASTICITY = 0.5;
 
     public ShopConfiguration {
-        Objects.requireNonNull(asyncRefreshInterval, "asyncRefreshInterval must not be null");
         items = items == null ? Map.of() : Map.copyOf(items);
         if (dampingFactor <= 0.0 || dampingFactor > 1.0) {
             throw new IllegalArgumentException("dampingFactor must be in range (0.0, 1.0]: " + dampingFactor);
-        }
-        if (asyncRefreshInterval.isNegative() || asyncRefreshInterval.isZero()) {
-            throw new IllegalArgumentException("asyncRefreshInterval must be positive: " + asyncRefreshInterval);
         }
         if (defaultStockBaseline <= 0) {
             throw new IllegalArgumentException("defaultStockBaseline must be positive: " + defaultStockBaseline);
@@ -56,22 +48,7 @@ public record ShopConfiguration(
 
     public static ShopConfiguration defaultConfiguration() {
         return new ShopConfiguration(
-                DEFAULT_ENABLED,
-                DEFAULT_DAMPING_FACTOR,
-                DEFAULT_ASYNC_REFRESH_INTERVAL,
-                DEFAULT_STOCK_BASELINE,
-                DEFAULT_ELASTICITY,
-                Map.of());
-    }
-
-    /** The five-argument shape, for a caller that names no items. */
-    public ShopConfiguration(
-            boolean enabled,
-            double dampingFactor,
-            Duration asyncRefreshInterval,
-            long defaultStockBaseline,
-            double defaultElasticity) {
-        this(enabled, dampingFactor, asyncRefreshInterval, defaultStockBaseline, defaultElasticity, Map.of());
+                DEFAULT_ENABLED, DEFAULT_DAMPING_FACTOR, DEFAULT_STOCK_BASELINE, DEFAULT_ELASTICITY, Map.of());
     }
 
     public static ShopConfiguration load(ConfigurationNode rootNode) {
@@ -84,17 +61,12 @@ public record ShopConfiguration(
         boolean enabled = node.node("enabled").getBoolean(DEFAULT_ENABLED);
         double damping = node.node("damping-factor").getDouble(DEFAULT_DAMPING_FACTOR);
 
-        String refreshRaw = node.node("async-refresh-interval").getString();
-        Duration refreshInterval = refreshRaw != null && !refreshRaw.isBlank()
-                ? Durations.parse(refreshRaw)
-                : Duration.ofMinutes(node.node("async-refresh-interval-minutes").getInt(2));
-
         long stockBaseline = node.node("default-stock-baseline").getLong(DEFAULT_STOCK_BASELINE);
         double elasticity = node.node("default-elasticity").getDouble(DEFAULT_ELASTICITY);
 
         Map<String, PricingCurve> items = readItems(node.node("items"), stockBaseline, elasticity);
 
-        return new ShopConfiguration(enabled, damping, refreshInterval, stockBaseline, elasticity, items);
+        return new ShopConfiguration(enabled, damping, stockBaseline, elasticity, items);
     }
 
     /**

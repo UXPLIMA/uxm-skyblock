@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 
 /**
- * Storage port for persistent player and island homes (Section 2.42).
+ * Storage port for persistent player and island homes.
  */
 public interface HomeStoragePort {
 

@@ -8,7 +8,7 @@ import com.uxplima.uxmskyblock.core.domain.ward.KineticRepulsionResult;
 import com.uxplima.uxmskyblock.core.domain.ward.KineticRepulsionResult.RepulsedEntity;
 
 /**
- * Enterprise kinetic ward service computing non-destructive repulsive impulse waves (Section 2.42).
+ * Kinetic ward service computing non-destructive repulsive impulse waves.
  * Radiates outward forces pushing hostile entities away from teleport arrival coordinates
  * without deleting or despawning custom mobs, bosses, or named pets.
  */

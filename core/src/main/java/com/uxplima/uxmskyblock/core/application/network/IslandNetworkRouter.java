@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Application service coordinating distributed island affinity, cross-server visits,
- * and fail-closed degradation as specified in Section 2.15.
+ * and fail-closed degradation when the network cannot answer.
  */
 public final class IslandNetworkRouter {
 

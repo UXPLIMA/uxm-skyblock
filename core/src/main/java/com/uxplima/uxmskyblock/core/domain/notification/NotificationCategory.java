@@ -1,7 +1,7 @@
 package com.uxplima.uxmskyblock.core.domain.notification;
 
 /**
- * Categories of durable offline player notifications (Section 2.18 & 2.42).
+ * Categories of durable offline player notifications.
  */
 public enum NotificationCategory {
     INVITE,

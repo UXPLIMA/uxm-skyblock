@@ -24,7 +24,7 @@ public final class IslandWorldCheck {
         Objects.requireNonNull(pluginName, "pluginName must not be null");
         if (world == null) {
             return Optional.of("The island world '" + worldName + "' is not loaded, so no island can be made."
-                    + " Name a loaded world as server-node.world-name in config.conf.");
+                    + " Name a loaded world as network.world-name in config.conf.");
         }
         ChunkGenerator generator = world.getGenerator();
         if (!(generator instanceof VoidIslandGenerator)) {

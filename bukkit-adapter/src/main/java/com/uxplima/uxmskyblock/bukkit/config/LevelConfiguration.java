@@ -10,7 +10,7 @@ import org.spongepowered.configurate.ConfigurationNode;
 
 /**
  * Declarative configuration holder for Island Level point valuations, dynamic price damping,
- * block weights, and mob spawner mappings (Section 2.26).
+ * block weights, and mob spawner mappings.
  */
 public record LevelConfiguration(
         long pointsPerLevel,

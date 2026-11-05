@@ -17,7 +17,7 @@ import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 
 /**
  * Pure domain application service tracking and enforcing tile and entity placement caps
- * per island with dynamic upgrade scaling (Section 2.31).
+ * per island with dynamic upgrade scaling.
  */
 public final class IslandLimitService {
 
