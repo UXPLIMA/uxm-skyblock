@@ -9,7 +9,7 @@ api-version: '26.2'
 folia-supported: true
 # Before the worlds, so the default world can be given the island generator.
 load: STARTUP
-description: Enterprise-grade, distributed, event-driven Skyblock platform
+description: Skyblock with eleven game modes, island teams, a shared bank, upgrades, missions and leaderboards
 author: UXPLIMA
 dependencies:
   server:
