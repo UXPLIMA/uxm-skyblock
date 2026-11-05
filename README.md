@@ -1,41 +1,32 @@
-# uxm-skyblock
+# uxmSkyblock
 
-High-performance, distributed Skyblock core engine for Paper and Folia.
+A Skyblock plugin for Paper and Folia 26.2 and later: islands with members, roles, a bank, upgrades, missions,
+leaderboards and warps, and eleven game modes beside the classic island: OneBlock, AcidIsland, Boxed, Brix,
+CaveBlock, ChunkBlock, Parkour, Poseidon, SkyGrid, StrangerRealms and TradeWinds. Free, under the GPL 3.0.
 
-## Architecture
+uxmLib and every library are shaded into the jar, so the plugin needs nothing else on the server. Vault,
+PlaceholderAPI, Floodgate and the web maps are used when present.
 
-The project is structured following clean architecture / hexagonal principles:
+## Install
 
-- **`api`**: Public integration API, events, and service interfaces for external plugins.
-- **`core`**: Pure domain models, business use cases, coordinate math, and authority rules (no Minecraft server dependencies).
-- **`persistence-adapter`**: Relational storage adapters (SQLite, MySQL, PostgreSQL) with automated schema migrations partitioned into `CoreSchemaMigrations`, `GameplaySchemaMigrations`, and `OperationsSchemaMigrations`.
-- **`bukkit-adapter`**: Paper / Folia platform adapter, custom event listeners, GUIs, commands, and modular bootstrap wirings (`ConfigurationWiring`, `PersistenceWiring`, `IntegrationWiring`, and `GameplayWiring` with dedicated sub-wirings `AdminWiring`, `EconomicWiring`, and `SocialWiring`).
-- **`rest-adapter`**: Standalone embedded HTTP service for external status monitoring and cluster queries.
+Download `uxmSkyblock-<version>.jar` from the latest GitHub release, check it against `SHA256SUMS`, put it in
+`plugins/` and give the island world the plugin's generator in `bukkit.yml` before the world is first made:
 
-## Requirements
-
-- **Java**: 25 or higher
-- **Server**: Paper 26.2+ or Folia 1.21+
-
-## Commands
-
-- **`/is`**: Core island operations: `/is create`, `/is home`, `/is sethome`, `/is info`, `/is members`, `/is invite`, `/is kick`, `/is leave`, `/is disband`, `/is level`, `/is top`, `/is settings`.
-- **`/is bank`**: Island economic banking: `/is bank balance`, `/is bank status`, `/is bank upkeep`, `/is bank paydebt`, `/is bank deposit <amount>`, `/is bank withdraw <amount>`.
-- **`/is chat`**: Private island communication: `/is chat [message]`, `/is c [message]`, `/is chat spy`.
-- **`/is admin`**: Staff oversight & disaster recovery: `/is admin inactivity`, `/is admin freeze <islandId>`, `/is admin unfreeze <islandId>`, `/is admin inspect <islandId>`, `/is admin restore <backupId>`, `/is admin delete <islandId>`.
-
-## Building
-
-```bash
-./gradlew build -Puxm.composite=false
+```yaml
+worlds:
+  world:
+    generator: uxmSkyblock
 ```
 
-## Testing
+The files it writes are listed in [docs/user/reference.md](docs/user/reference.md).
 
-```bash
-./gradlew test -Puxm.composite=false
+## Build
+
+```sh
+./gradlew build       # format check, static analysis, the shaded jar and its checks
+./gradlew runServer   # a local Paper server with the plugin
 ```
 
-## License
+## Documentation
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+[docs/README.md](docs/README.md)

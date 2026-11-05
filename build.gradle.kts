@@ -1,26 +1,14 @@
-allprojects {
-    group = "com.uxplima"
-    version = project.findProperty("projectVersion")?.toString() ?: "0.1.0-SNAPSHOT"
-
-    repositories {
-        mavenCentral()
-        maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://repo.codemc.org/repository/maven-public/")
-        // uxmLib. JitPack stopped building its tags at 0.149.0, when it could no longer provision a Java 25
-        // toolchain, and the release lands in the Nexus with the same coordinates on every machine.
-        maven("https://repo.uxplima.com/repository/maven-public/")
-        maven("https://jitpack.io")
-        maven("https://repo.extendedclip.com/releases/")
-        maven("https://repo.opencollab.dev/main/")
-        // Normal reproducible builds must NOT depend on ambient Maven Local state.
-        // Gated behind explicit -Puxm.mavenLocal=true flag for local development only.
-        if (providers.gradleProperty("uxm.mavenLocal").map { it == "true" }.getOrElse(false)) {
-            mavenLocal()
-        }
-    }
+plugins {
+    // On the root class path so a module can apply the Shadow plugin that comes with uxm-gradle without a version.
+    id("uxm.paper-plugin") apply false
 }
 
-tasks.register("printVersion") {
-    val current = version.toString()
-    doLast { println(current) }
+allprojects {
+    group = "com.uxplima"
+    version = project.findProperty("projectVersion")?.toString() ?: "0.0.1-SNAPSHOT"
+}
+
+subprojects {
+    // joml ships class files whose type annotations javac warns about; the warning is not ours to fix.
+    tasks.withType<JavaCompile>().configureEach { options.compilerArgs.add("-Xlint:-classfile") }
 }

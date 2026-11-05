@@ -1,10 +1,4 @@
-* text=auto
-
-# Shell scripts and wrappers must have LF line endings
-gradlew text eol=lf
-*.sh text eol=lf
-
-# Windows batch files must have CRLF line endings
-gradlew.bat text eol=crlf
+* text=auto eol=lf
 *.bat text eol=crlf
 *.cmd text eol=crlf
+*.ps1 text eol=crlf

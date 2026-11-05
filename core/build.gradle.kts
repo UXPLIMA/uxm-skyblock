@@ -1,11 +1,7 @@
 plugins {
-    id("uxmskyblock.java-conventions")
+    id("uxm.java")
 }
 
 dependencies {
     api(project(":api"))
-    compileOnly(libs.jspecify)
-
-    testImplementation(libs.jqwik)
-    testImplementation(libs.archunit.junit)
 }

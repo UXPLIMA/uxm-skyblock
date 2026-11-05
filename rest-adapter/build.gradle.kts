@@ -1,5 +1,5 @@
 plugins {
-    id("uxmskyblock.java-conventions")
+    id("uxm.java")
 }
 
 dependencies {
@@ -8,8 +8,5 @@ dependencies {
 
     implementation(libs.javalin)
     implementation(libs.gson)
-    implementation(libs.slf4j.api)
-
-    testImplementation(libs.bundles.testing)
-    testImplementation(libs.slf4j.simple)
+    compileOnly(libs.slf4j.api)
 }

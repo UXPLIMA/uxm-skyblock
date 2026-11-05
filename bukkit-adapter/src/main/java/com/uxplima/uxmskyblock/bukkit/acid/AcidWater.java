@@ -13,8 +13,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 
-import io.papermc.paper.potion.PotionMix;
-
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -148,8 +146,7 @@ public final class AcidWater {
 
     /** Smelting a bottle of water makes it clean. */
     public static FurnaceRecipe furnaceRecipe() {
-        return new FurnaceRecipe(
-                FURNACE, cleanBottle(), new RecipeChoice.ExactChoice(waterBottle()), FURNACE_EXPERIENCE, FURNACE_TICKS);
+        return new FurnaceRecipe(FURNACE, cleanBottle(), exactly(waterBottle()), FURNACE_EXPERIENCE, FURNACE_TICKS);
     }
 
     /** Smelting a bucket of water makes it clean. */
@@ -157,17 +154,14 @@ public final class AcidWater {
         return new FurnaceRecipe(
                 FURNACE_BUCKET,
                 cleanBucket(),
-                new RecipeChoice.ExactChoice(new ItemStack(Material.WATER_BUCKET)),
+                exactly(new ItemStack(Material.WATER_BUCKET)),
                 FURNACE_EXPERIENCE,
                 FURNACE_TICKS);
     }
 
-    /** Brewing a bottle of water with coal or charcoal makes it clean. */
-    public static PotionMix brewingMix() {
-        return new PotionMix(
-                BREWING,
-                cleanBottle(),
-                PotionMix.createPredicateChoice(AcidWater::isAcid),
-                new RecipeChoice.MaterialChoice(Material.COAL, Material.CHARCOAL));
+    // The constructor is the one form Paper 26.2 has; RecipeChoice.exactChoice came later.
+    @SuppressWarnings("removal")
+    private static RecipeChoice exactly(ItemStack item) {
+        return new RecipeChoice.ExactChoice(item);
     }
 }

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
+import com.uxplima.uxmskyblock.bukkit.acid.AcidBrewing;
 import com.uxplima.uxmskyblock.bukkit.acid.AcidHazard;
 import com.uxplima.uxmskyblock.bukkit.acid.AcidSeaStart;
 import com.uxplima.uxmskyblock.bukkit.acid.AcidWater;
@@ -124,8 +125,8 @@ public final class AcidIslandWiring implements AutoCloseable {
         }
         if (config.purification().brewingWithCoal()) {
             try {
-                server.getPotionBrewer().addPotionMix(AcidWater.brewingMix());
-            } catch (RuntimeException e) {
+                AcidBrewing.add(server);
+            } catch (RuntimeException | LinkageError e) {
                 LOGGER.log(Level.WARNING, "Brewing acid water clean with coal could not be added.", e);
             }
         }
@@ -200,7 +201,7 @@ public final class AcidIslandWiring implements AutoCloseable {
             Bukkit.removeRecipe(AcidWater.FURNACE);
             Bukkit.removeRecipe(AcidWater.FURNACE_BUCKET);
             try {
-                Bukkit.getPotionBrewer().removePotionMix(AcidWater.BREWING);
+                AcidBrewing.remove();
             } catch (RuntimeException e) {
                 LOGGER.log(Level.FINE, "Brewing acid water clean could not be removed.", e);
             }
