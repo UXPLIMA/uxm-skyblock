@@ -61,3 +61,224 @@ dependencies:
       load: BEFORE
       required: false
 
+# Every node the plugin checks. What a member may do on an island is decided by island roles
+# (/is permissions), not by these.
+permissions:
+  uxmskyblock.admin.bypass:
+    description: "Bypass all island protection and boundaries"
+    default: op
+  uxmskyblock.admin.reload:
+    description: "Reload plugin configuration"
+    default: op
+  uxmskyblock.admin.doctor:
+    description: "Ask how the plugin is, one line per thing that can be wrong"
+    default: op
+  uxmskyblock.admin.manage:
+    description: "Administrative island management"
+    default: op
+  uxmskyblock.admin.freeze:
+    description: "Freeze and unfreeze islands administratively"
+    default: op
+  uxmskyblock.admin.inspect:
+    description: "Inspect and bypass frozen island quarantines"
+    default: op
+  uxmskyblock.admin.restore:
+    description: "Back up and restore islands and the database"
+    default: op
+  uxmskyblock.admin.booster:
+    description: "Grant island boosters administratively"
+    default: op
+  uxmskyblock.admin.schematic:
+    description: "Save and paste schematics"
+    default: op
+  uxmskyblock.admin.oneblock.setphase:
+    description: "Move a OneBlock island to a phase"
+    default: op
+  uxmskyblock.admin.oneblock.setcount:
+    description: "Set a OneBlock island's count of breaks"
+    default: op
+  uxmskyblock.admin.oneblock.addcount:
+    description: "Add to or take from a OneBlock island's count of breaks"
+    default: op
+  uxmskyblock.admin.oneblock.check:
+    description: "Read where a OneBlock island stands"
+    default: op
+  uxmskyblock.admin.boxed.setsize:
+    description: "Set how far across a Boxed island's box is"
+    default: op
+  uxmskyblock.admin.boxed.grow:
+    description: "Push a Boxed island's box out"
+    default: op
+  uxmskyblock.admin.chunkblock.open:
+    description: "Open a chunk of a ChunkBlock island"
+    default: op
+  uxmskyblock.admin.chunkblock.close:
+    description: "Close a chunk of a ChunkBlock island"
+    default: op
+  uxmskyblock.admin.chunkblock.reset:
+    description: "Close every chunk of a ChunkBlock island but the first"
+    default: op
+  uxmskyblock.admin.tradewinds.setrank:
+    description: "Give a TradeWinds vessel a rank"
+    default: op
+  uxmskyblock.admin.tradewinds.setstanding:
+    description: "Set a TradeWinds vessel's standing in a port"
+    default: op
+  uxmskyblock.admin.tradewinds.moveport:
+    description: "Put a TradeWinds vessel in a port at once"
+    default: op
+  uxmskyblock.admin.realms.remirror:
+    description: "Lay a StrangerRealms island's Upside Down again from its land"
+    default: op
+  uxmskyblock.admin.parkour.resettimes:
+    description: "Forget the runs on a Parkour course, of every runner or of one"
+    default: op
+  uxmskyblock.admin.brix.startcontest:
+    description: "Open a Brix build contest, on a theme written or a configured one"
+    default: op
+  uxmskyblock.admin.brix.stopcontest:
+    description: "Take the Brix build contest under way off, with its entries and votes"
+    default: op
+  uxmskyblock.admin.loot.mark:
+    description: "Give a container a loot table, filled when it is first opened"
+    default: op
+  uxmskyblock.admin.top.add:
+    description: "Make the sign, head or spot looked at show an island of a leaderboard"
+    default: op
+  uxmskyblock.admin.top.remove:
+    description: "Take a leaderboard display away"
+    default: op
+  uxmskyblock.admin.top.list:
+    description: "List the leaderboard displays"
+    default: op
+  uxmskyblock.admin.oneblock.respawn:
+    description: "Lay a OneBlock island's block again"
+    default: op
+  uxmskyblock.island.create:
+    description: "Create a new skyblock island"
+    default: true
+  uxmskyblock.island.delete:
+    description: "Delete an island"
+    default: true
+  uxmskyblock.island.home:
+    description: "Teleport to island home"
+    default: true
+  uxmskyblock.island.sethome:
+    description: "Set island home location"
+    default: true
+  uxmskyblock.island.invite:
+    description: "Invite members to island"
+    default: true
+  uxmskyblock.island.kick:
+    description: "Kick members from island"
+    default: true
+  uxmskyblock.island.ban:
+    description: "Ban players from island"
+    default: true
+  uxmskyblock.island.unban:
+    description: "Unban players from island"
+    default: true
+  uxmskyblock.island.bank:
+    description: "Access island bank"
+    default: true
+  uxmskyblock.island.biome:
+    description: "Change island biome"
+    default: true
+  uxmskyblock.island.upgrade:
+    description: "Upgrade island perks"
+    default: true
+  uxmskyblock.island.top:
+    description: "View island leaderboards"
+    default: true
+  uxmskyblock.island.fly:
+    description: "Fly on your own island with /is fly"
+    default: true
+  uxmskyblock.bypass.limits:
+    description: "Place past an island's block and creature limits"
+    default: false
+  uxmskyblock.bypass.quarantine:
+    description: "Enter a quarantined island"
+    default: false
+  uxmskyblock.bypass.coopcooldown:
+    description: "Join another island before the join cooldown ends"
+    default: false
+  uxmskyblock.bypass.resetlimits:
+    description: "Reset an island past the reset limits"
+    default: false
+  uxmskyblock.brix.keepmode:
+    description: "Keep one's game mode on a Brix plot"
+    default: op
+  uxmskyblock.parkour.keepmode:
+    description: "Keep one's game mode on a Parkour course"
+    default: op
+  uxmskyblock.parkour.checks.bypass:
+    description: "Run a Parkour course without its checks"
+    default: false
+  uxmskyblock.chat.spy:
+    description: "Spy on island private chat channels"
+    default: op
+  uxmskyblock.admin.*:
+    description: "Every operator command and the admin bypass"
+    default: op
+    children:
+      uxmskyblock.admin.bypass: true
+      uxmskyblock.admin.reload: true
+      uxmskyblock.admin.doctor: true
+      uxmskyblock.admin.manage: true
+      uxmskyblock.admin.freeze: true
+      uxmskyblock.admin.inspect: true
+      uxmskyblock.admin.restore: true
+      uxmskyblock.admin.booster: true
+      uxmskyblock.admin.schematic: true
+      uxmskyblock.admin.oneblock.setphase: true
+      uxmskyblock.admin.oneblock.setcount: true
+      uxmskyblock.admin.oneblock.addcount: true
+      uxmskyblock.admin.oneblock.check: true
+      uxmskyblock.admin.boxed.setsize: true
+      uxmskyblock.admin.boxed.grow: true
+      uxmskyblock.admin.chunkblock.open: true
+      uxmskyblock.admin.chunkblock.close: true
+      uxmskyblock.admin.chunkblock.reset: true
+      uxmskyblock.admin.tradewinds.setrank: true
+      uxmskyblock.admin.tradewinds.setstanding: true
+      uxmskyblock.admin.tradewinds.moveport: true
+      uxmskyblock.admin.realms.remirror: true
+      uxmskyblock.admin.parkour.resettimes: true
+      uxmskyblock.admin.brix.startcontest: true
+      uxmskyblock.admin.brix.stopcontest: true
+      uxmskyblock.admin.loot.mark: true
+      uxmskyblock.admin.top.add: true
+      uxmskyblock.admin.top.remove: true
+      uxmskyblock.admin.top.list: true
+      uxmskyblock.admin.oneblock.respawn: true
+  uxmskyblock.bypass.*:
+    description: "Every exemption from the anti-abuse rules and the limits"
+    default: false
+    children:
+      uxmskyblock.bypass.limits: true
+      uxmskyblock.bypass.quarantine: true
+      uxmskyblock.bypass.coopcooldown: true
+      uxmskyblock.bypass.resetlimits: true
+  uxmskyblock.*:
+    description: "Everything the plugin checks"
+    default: false
+    children:
+      uxmskyblock.admin.*: true
+      uxmskyblock.bypass.*: true
+      uxmskyblock.island.create: true
+      uxmskyblock.island.delete: true
+      uxmskyblock.island.home: true
+      uxmskyblock.island.sethome: true
+      uxmskyblock.island.invite: true
+      uxmskyblock.island.kick: true
+      uxmskyblock.island.ban: true
+      uxmskyblock.island.unban: true
+      uxmskyblock.island.bank: true
+      uxmskyblock.island.biome: true
+      uxmskyblock.island.upgrade: true
+      uxmskyblock.island.top: true
+      uxmskyblock.island.fly: true
+      uxmskyblock.brix.keepmode: true
+      uxmskyblock.parkour.keepmode: true
+      uxmskyblock.parkour.checks.bypass: true
+      uxmskyblock.chat.spy: true

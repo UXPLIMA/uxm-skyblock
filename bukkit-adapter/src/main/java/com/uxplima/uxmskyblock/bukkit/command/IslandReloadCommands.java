@@ -15,6 +15,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmskyblock.bukkit.bootstrap.SkyblockReloader;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
 import com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions;
@@ -54,9 +55,8 @@ public final class IslandReloadCommands {
      */
     public LiteralArgumentBuilder<CommandSourceStack> buildReload() {
         return Cmd.literal("reload")
-                .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_RELOAD.node())
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_RELOAD.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 .executes(this::executeReload);
     }
 

@@ -16,6 +16,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
 import com.uxplima.uxmlib.command.CommandRegistrar;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmskyblock.bukkit.config.HomeConfiguration;
 import com.uxplima.uxmskyblock.bukkit.dimension.IslandDimensionListener;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
@@ -240,13 +241,18 @@ public final class IslandCommandTree extends IslandCommandSettings {
             // Its own command, there whether or not the island command is.
             admin.register(plugin, this.commandNames, this::reads);
         }
-        ConfiguredCommandTree<CommandSourceStack> names = new ConfiguredCommandTree<>(this.commandNames);
+        ConfiguredCommandTree names = new ConfiguredCommandTree(this.commandNames);
         com.uxplima.uxmlib.command.annotation.ConfiguredCommands.Entry root = names.root();
         if (!root.enabled()) {
             // The operator turned the whole command off, which is how a server keeps only the menu.
             return;
         }
-        CommandRegistrar.register(plugin, buildRoot().build(), "Main Skyblock command tree", names.rootAliases());
+        CommandRegistrar.register(
+                plugin,
+                buildRoot().build(),
+                "Main Skyblock command tree",
+                names.rootAliases(),
+                (source, gate) -> send(source.getSender(), "command.no_permission"));
         java.util.Map<String, java.util.List<String>> localized = names.rootLocalized();
         if (!localized.isEmpty()) {
             // A root word for one language is an alias anyone can type, kept out of other readers' command lists.
@@ -259,9 +265,9 @@ public final class IslandCommandTree extends IslandCommandSettings {
         }
     }
 
-    /** Whether {@code source} reads the language {@code tag} names. The console reads every one. */
-    private boolean reads(CommandSourceStack source, String tag) {
-        return !(source.getSender() instanceof org.bukkit.entity.Player player)
+    /** Whether {@code sender} reads the language {@code tag} names. The console reads every one. */
+    private boolean reads(org.bukkit.command.CommandSender sender, String tag) {
+        return !(sender instanceof org.bukkit.entity.Player player)
                 || ConfiguredCommandTree.readerOf(tag, messages.locales().localeOf(player));
     }
 
@@ -273,7 +279,7 @@ public final class IslandCommandTree extends IslandCommandSettings {
      * a player types the line it guessed about.
      */
     public LiteralArgumentBuilder<CommandSourceStack> buildRoot() {
-        ConfiguredCommandTree<CommandSourceStack> names = new ConfiguredCommandTree<>(commandNames, this::reads);
+        ConfiguredCommandTree names = new ConfiguredCommandTree(commandNames, this::reads);
         LiteralArgumentBuilder<CommandSourceStack> root =
                 names.apply(assembleRoot(new CommandGroupBuilder(this).build()));
         com.uxplima.uxmlib.command.annotation.ConfiguredCommands.Entry rootEntry = names.root();
@@ -283,7 +289,7 @@ public final class IslandCommandTree extends IslandCommandSettings {
                 : rootEntry.aliases().get(0);
         this.helpBranches = names.branches();
         java.util.Map<String, String> typed = new java.util.HashMap<>();
-        for (ConfiguredCommandTree.Branch<CommandSourceStack> branch : helpBranches) {
+        for (ConfiguredCommandTree.Branch branch : helpBranches) {
             typed.put(branch.key(), branch.name());
         }
         String rootTyped = this.rootWord;
@@ -318,7 +324,7 @@ public final class IslandCommandTree extends IslandCommandSettings {
     private String rootWord = ConfiguredCommandTree.ROOT;
 
     /** Every branch as the operator named it, which is what {@code /is help} lists. */
-    private java.util.List<ConfiguredCommandTree.Branch<CommandSourceStack>> helpBranches = java.util.List.of();
+    private java.util.List<ConfiguredCommandTree.Branch> helpBranches = java.util.List.of();
 
     /**
      * Puts a verb behind the permission the catalogue publishes for it.
@@ -332,7 +338,7 @@ public final class IslandCommandTree extends IslandCommandSettings {
      */
     private static LiteralArgumentBuilder<CommandSourceStack> gated(
             LiteralArgumentBuilder<CommandSourceStack> verb, CatalogPermissions permission) {
-        return verb.requires(src -> src.getSender().hasPermission(permission.node()));
+        return verb.requires(Gate.permission(permission.node()));
     }
 
     private LiteralArgumentBuilder<CommandSourceStack> assembleRoot(CommandGroupBuilder.CommandGroups groups) {

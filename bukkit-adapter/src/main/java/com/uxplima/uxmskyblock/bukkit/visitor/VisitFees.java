@@ -101,7 +101,10 @@ public final class VisitFees implements VisitFeeGate {
 
     @Override
     public long owed(IslandId island, Player visitor, @Nullable ProfileId profile) {
-        if (most.getAsLong() <= 0 || !wallet.available() || visitor.hasPermission("uxmskyblock.admin.bypass")) {
+        if (most.getAsLong() <= 0
+                || !wallet.available()
+                || visitor.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             return 0;
         }
         if (profile != null

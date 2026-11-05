@@ -14,6 +14,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.uxplima.uxmlib.command.Cmd;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmlib.health.HealthCheck;
 import com.uxplima.uxmlib.health.HealthReport;
 import com.uxplima.uxmskyblock.bukkit.i18n.Messages;
@@ -41,9 +42,8 @@ public final class IslandDoctorCommands {
 
     public LiteralArgumentBuilder<CommandSourceStack> buildDoctor() {
         return Cmd.literal("doctor")
-                .requires(src -> src.getSender().hasPermission(CatalogPermissions.ADMIN_DOCTOR.node())
-                        || src.getSender().hasPermission(CatalogPermissions.ADMIN_MANAGE.node())
-                        || src.getSender().isOp())
+                .requires(Gate.permission(CatalogPermissions.ADMIN_DOCTOR.node())
+                        .or(Gate.permission(CatalogPermissions.ADMIN_MANAGE.node())))
                 .executes(this::executeDoctor);
     }
 

@@ -47,9 +47,12 @@ public record AntiAbuseConfiguration(
      */
     public static final Duration DEFAULT_RESET_CHALLENGE_TTL = Duration.ofSeconds(60);
 
-    public static final String DEFAULT_RESET_BYPASS_PERMISSION = "uxmskyblock.bypass.resetlimits";
-    public static final String DEFAULT_COOP_BYPASS_PERMISSION = "uxmskyblock.bypass.coopcooldown";
-    public static final String DEFAULT_QUARANTINE_BYPASS_PERMISSION = "uxmskyblock.bypass.quarantine";
+    public static final String DEFAULT_RESET_BYPASS_PERMISSION =
+            com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.BYPASS_RESET_LIMITS.node();
+    public static final String DEFAULT_COOP_BYPASS_PERMISSION =
+            com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.BYPASS_COOP_COOLDOWN.node();
+    public static final String DEFAULT_QUARANTINE_BYPASS_PERMISSION =
+            com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.BYPASS_QUARANTINE.node();
 
     public AntiAbuseConfiguration {
         Objects.requireNonNull(quarantineDuration, "quarantineDuration must not be null");

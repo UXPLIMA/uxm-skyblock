@@ -17,7 +17,8 @@ import org.spongepowered.configurate.ConfigurationNode;
 public record LimitConfiguration(boolean enabled, String bypassPermission, Map<LimitType, LimitQuota> quotas) {
 
     public static final boolean DEFAULT_ENABLED = true;
-    public static final String DEFAULT_BYPASS_PERMISSION = "uxmskyblock.bypass.limits";
+    public static final String DEFAULT_BYPASS_PERMISSION =
+            com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.BYPASS_LIMITS.node();
 
     public LimitConfiguration {
         Objects.requireNonNull(bypassPermission, "bypassPermission must not be null");

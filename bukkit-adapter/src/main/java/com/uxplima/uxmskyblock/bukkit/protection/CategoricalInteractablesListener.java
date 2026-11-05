@@ -82,7 +82,7 @@ public final class CategoricalInteractablesListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (player.hasPermission("uxmskyblock.admin.bypass")) {
+        if (player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             return;
         }
 

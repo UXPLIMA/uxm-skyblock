@@ -381,7 +381,7 @@ public final class IslandLifecycleCommands {
         String node = rules == null
                 ? com.uxplima.uxmskyblock.bukkit.config.AntiAbuseConfiguration.DEFAULT_RESET_BYPASS_PERMISSION
                 : rules.resetBypassPermission();
-        return player.hasPermission(node) || player.isOp();
+        return player.hasPermission(node);
     }
 
     /** Draws a new island on the web map, while one is running. */

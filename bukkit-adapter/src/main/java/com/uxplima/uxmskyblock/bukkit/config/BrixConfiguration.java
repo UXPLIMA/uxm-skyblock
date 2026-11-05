@@ -108,8 +108,10 @@ public record BrixConfiguration(boolean enabled, Ground ground, Modes modes, Rul
      */
     public record Modes(org.bukkit.GameMode build, org.bukkit.GameMode visit, String keepPermission) {
 
-        public static final Modes SHIPPED =
-                new Modes(org.bukkit.GameMode.CREATIVE, org.bukkit.GameMode.ADVENTURE, "uxmskyblock.brix.keepmode");
+        public static final Modes SHIPPED = new Modes(
+                org.bukkit.GameMode.CREATIVE,
+                org.bukkit.GameMode.ADVENTURE,
+                com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.BRIX_KEEP_MODE.node());
 
         public Modes {
             Objects.requireNonNull(build, "build must not be null");

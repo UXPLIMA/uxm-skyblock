@@ -61,7 +61,9 @@ public final class VisitorCommandGuard implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         Optional<String> blocked = configuration.get().blocking(event.getMessage(), namesOf);
-        if (blocked.isEmpty() || player.hasPermission("uxmskyblock.admin.bypass")) {
+        if (blocked.isEmpty()
+                || player.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             return;
         }
         org.bukkit.Location standing = player.getLocation();

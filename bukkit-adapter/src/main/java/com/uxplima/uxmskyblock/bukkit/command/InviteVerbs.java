@@ -140,7 +140,7 @@ final class InviteVerbs {
         String node = rules == null
                 ? com.uxplima.uxmskyblock.bukkit.config.AntiAbuseConfiguration.DEFAULT_COOP_BYPASS_PERMISSION
                 : rules.coopBypassPermission();
-        boolean bypass = player.hasPermission(node) || player.isOp();
+        boolean bypass = player.hasPermission(node);
 
         if (lock.checkCoopJoinAllowed(playerUuid, bypass)
                 instanceof com.uxplima.uxmskyblock.core.domain.antiabuse.CoopJoinCheckResult.CooldownActive held) {

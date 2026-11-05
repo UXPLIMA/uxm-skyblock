@@ -11,9 +11,14 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.logging.Logger;
 
+import org.bukkit.command.CommandSender;
+
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.uxplima.uxmlib.command.Gate;
 import com.uxplima.uxmlib.command.annotation.ConfiguredCommands;
 import org.jspecify.annotations.Nullable;
 
@@ -34,9 +39,8 @@ import org.jspecify.annotations.Nullable;
  * on the root is one more alias, which every player can type and only its readers are shown. A word on a branch
  * is answered for its readers and the console, and nobody else is offered it.
  *
- * @param <S> the command source
  */
-final class ConfiguredCommandTree<S> {
+final class ConfiguredCommandTree {
 
     /** The key the root is read under, and the word it answers to when the file says nothing. */
     static final String ROOT = "island";
@@ -46,12 +50,12 @@ final class ConfiguredCommandTree<S> {
     private final @Nullable ConfiguredCommands names;
 
     /** A branch as a player reaches it: the key the code knows it by, the word typed, who may. */
-    record Branch<S>(String key, String name, java.util.function.Predicate<S> requirement) {}
+    record Branch(String key, String name, java.util.function.Predicate<CommandSourceStack> requirement) {}
 
-    private final List<Branch<S>> branches = new ArrayList<>();
+    private final List<Branch> branches = new ArrayList<>();
 
     /** Whether a source reads the language a tag names. The console reads every one. */
-    private final BiPredicate<S, String> reads;
+    private final BiPredicate<CommandSender, String> reads;
 
     /** The key the root is read under, the word it answers to and its aliases when the file says nothing. */
     private final String rootKey;
@@ -64,7 +68,7 @@ final class ConfiguredCommandTree<S> {
     }
 
     /** @param reads whether a source reads the language a tag such as {@code tr} or {@code pt-BR} names */
-    ConfiguredCommandTree(@Nullable ConfiguredCommands names, BiPredicate<S, String> reads) {
+    ConfiguredCommandTree(@Nullable ConfiguredCommands names, BiPredicate<CommandSender, String> reads) {
         this(names, reads, ROOT, ROOT, List.of("is"));
     }
 
@@ -78,7 +82,7 @@ final class ConfiguredCommandTree<S> {
      */
     ConfiguredCommandTree(
             @Nullable ConfiguredCommands names,
-            BiPredicate<S, String> reads,
+            BiPredicate<CommandSender, String> reads,
             String rootKey,
             String rootWord,
             List<String> rootAliases) {
@@ -134,7 +138,7 @@ final class ConfiguredCommandTree<S> {
      * The tree {@code built} describes, under the names the file gives, with every branch the file
      * turns off left out.
      */
-    LiteralArgumentBuilder<S> apply(LiteralArgumentBuilder<S> built) {
+    LiteralArgumentBuilder<CommandSourceStack> apply(LiteralArgumentBuilder<CommandSourceStack> built) {
         Objects.requireNonNull(built, "built");
         return rename(built, root().name());
     }
@@ -143,27 +147,28 @@ final class ConfiguredCommandTree<S> {
      * The branches of {@code built} under the names the file gives, with {@code built} keeping its own word: for a
      * branch whose word the tree above it names.
      */
-    LiteralArgumentBuilder<S> applyToBranches(LiteralArgumentBuilder<S> built) {
+    LiteralArgumentBuilder<CommandSourceStack> applyToBranches(LiteralArgumentBuilder<CommandSourceStack> built) {
         Objects.requireNonNull(built, "built");
         return rename(built, built.getLiteral());
     }
 
-    private LiteralArgumentBuilder<S> rename(LiteralArgumentBuilder<S> built, String rootName) {
-        LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.<S>literal(rootName)
+    private LiteralArgumentBuilder<CommandSourceStack> rename(
+            LiteralArgumentBuilder<CommandSourceStack> built, String rootName) {
+        LiteralArgumentBuilder<CommandSourceStack> root = LiteralArgumentBuilder.<CommandSourceStack>literal(rootName)
                 .requires(built.getRequirement())
                 .executes(built.getCommand());
         Set<String> taken = new HashSet<>();
-        List<CommandNode<S>> kept = new ArrayList<>();
-        for (CommandNode<S> child : built.getArguments()) {
-            if (child instanceof LiteralCommandNode<S> literal) {
+        List<CommandNode<CommandSourceStack>> kept = new ArrayList<>();
+        for (CommandNode<CommandSourceStack> child : built.getArguments()) {
+            if (child instanceof LiteralCommandNode<CommandSourceStack> literal) {
                 taken.add(literal.getLiteral());
             }
             kept.add(child);
         }
         Set<String> answered = new HashSet<>();
         branches.clear();
-        for (CommandNode<S> child : kept) {
-            if (!(child instanceof LiteralCommandNode<S> literal)) {
+        for (CommandNode<CommandSourceStack> child : kept) {
+            if (!(child instanceof LiteralCommandNode<CommandSourceStack> literal)) {
                 root.then(child);
                 continue;
             }
@@ -184,7 +189,7 @@ final class ConfiguredCommandTree<S> {
                             + "', which another branch already answers to, so it keeps its own word.");
                     if (answered.add(key)) {
                         root.then(copy(literal, key));
-                        branches.add(new Branch<>(key, key, literal.getRequirement()));
+                        branches.add(new Branch(key, key, literal.getRequirement()));
                     }
                     continue;
                 }
@@ -194,13 +199,14 @@ final class ConfiguredCommandTree<S> {
                         && !entry.aliases().contains(word)) {
                     // A word for some languages is offered to their readers, and the console, only.
                     root.then(copy(literal, word)
-                            .requires(literal.getRequirement()
-                                    .and(source -> tags.stream().anyMatch(tag -> reads.test(source, tag)))));
+                            .requires(Gate.of(literal.getRequirement())
+                                    .and(Gate.shownTo(
+                                            sender -> tags.stream().anyMatch(tag -> reads.test(sender, tag))))));
                     continue;
                 }
                 root.then(copy(literal, word));
                 if (word.equals(entry.name())) {
-                    branches.add(new Branch<>(key, word, literal.getRequirement()));
+                    branches.add(new Branch(key, word, literal.getRequirement()));
                 }
             }
         }
@@ -208,20 +214,21 @@ final class ConfiguredCommandTree<S> {
     }
 
     /** Every branch {@link #apply} kept, in the order the tree holds them, under its own name. */
-    List<Branch<S>> branches() {
+    List<Branch> branches() {
         return List.copyOf(branches);
     }
 
     /** {@code node} under another word, with everything it runs, requires and holds. */
-    private static <S> LiteralArgumentBuilder<S> copy(LiteralCommandNode<S> node, String word) {
-        LiteralArgumentBuilder<S> copy = LiteralArgumentBuilder.<S>literal(word)
+    private static LiteralArgumentBuilder<CommandSourceStack> copy(
+            LiteralCommandNode<CommandSourceStack> node, String word) {
+        LiteralArgumentBuilder<CommandSourceStack> copy = LiteralArgumentBuilder.<CommandSourceStack>literal(word)
                 .requires(node.getRequirement())
                 .executes(node.getCommand());
         if (node.getRedirect() != null) {
             // A redirected node holds no children of its own; it hands the rest of the line on.
             return copy.forward(node.getRedirect(), node.getRedirectModifier(), node.isFork());
         }
-        for (CommandNode<S> child : node.getChildren()) {
+        for (CommandNode<CommandSourceStack> child : node.getChildren()) {
             copy.then(child);
         }
         return copy;

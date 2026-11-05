@@ -138,9 +138,10 @@ public final class BukkitIslandVisitorEvictionAdapter implements IslandVisitorEv
     }
 
     private boolean isStaffOrBypass(Player player) {
-        return player.isOp()
-                || player.hasPermission("uxmskyblock.admin.bypass")
-                || player.hasPermission("uxmskyblock.admin.inspect")
-                || player.hasPermission("uxmskyblock.admin.freeze");
+        return player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())
+                || player.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_INSPECT.node())
+                || player.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_FREEZE.node());
     }
 }

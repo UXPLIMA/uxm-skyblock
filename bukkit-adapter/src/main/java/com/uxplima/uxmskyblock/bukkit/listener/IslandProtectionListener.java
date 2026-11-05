@@ -133,10 +133,11 @@ public final class IslandProtectionListener implements Listener {
     }
 
     private boolean isStaffInspector(Player player) {
-        return player.isOp()
-                || player.hasPermission("uxmskyblock.admin.bypass")
-                || player.hasPermission("uxmskyblock.admin.inspect")
-                || player.hasPermission("uxmskyblock.admin.freeze");
+        return player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())
+                || player.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_INSPECT.node())
+                || player.hasPermission(
+                        com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_FREEZE.node());
     }
 
     private boolean isIslandFrozen(Island island) {
@@ -275,7 +276,7 @@ public final class IslandProtectionListener implements Listener {
         Objects.requireNonNull(location, "location must not be null");
         Objects.requireNonNull(permission, "permission must not be null");
 
-        if (player.hasPermission("uxmskyblock.admin.bypass")) {
+        if (player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             return Verdict.ALLOWED;
         }
         Optional<Island> optIsland = findIslandAt(location);
@@ -399,7 +400,7 @@ public final class IslandProtectionListener implements Listener {
             // Paper gives it the player's place, but no anvil or chest is there to protect.
             return;
         }
-        if (player.hasPermission("uxmskyblock.admin.bypass")) {
+        if (player.hasPermission(com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
             return;
         }
 
@@ -430,7 +431,8 @@ public final class IslandProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player victim && event.getDamager() instanceof Player damager) {
-            if (damager.hasPermission("uxmskyblock.admin.bypass")) {
+            if (damager.hasPermission(
+                    com.uxplima.uxmskyblock.bukkit.permission.CatalogPermissions.ADMIN_BYPASS.node())) {
                 return;
             }
             findIslandAt(event.getEntity().getLocation()).ifPresent(island -> {
