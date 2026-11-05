@@ -67,6 +67,9 @@ permissions:
   uxmskyblock.admin.bypass:
     description: "Bypass all island protection and boundaries"
     default: op
+  uxmskyblock.admin.language:
+    description: "Set or clear the language another player reads"
+    default: op
   uxmskyblock.admin.reload:
     description: "Reload plugin configuration"
     default: op
@@ -222,6 +225,7 @@ permissions:
     default: op
     children:
       uxmskyblock.admin.bypass: true
+      uxmskyblock.admin.language: true
       uxmskyblock.admin.reload: true
       uxmskyblock.admin.doctor: true
       uxmskyblock.admin.manage: true

@@ -13,6 +13,8 @@ import org.bukkit.plugin.PluginManager;
  */
 public enum CatalogPermissions {
     ADMIN_BYPASS("uxmskyblock.admin.bypass", "Bypass all island protection and boundaries", PermissionDefault.OP),
+    ADMIN_LANGUAGE(
+            "uxmskyblock.admin.language", "Set or clear the language another player reads", PermissionDefault.OP),
     ADMIN_RELOAD("uxmskyblock.admin.reload", "Reload plugin configuration", PermissionDefault.OP),
     ADMIN_DOCTOR(
             "uxmskyblock.admin.doctor",

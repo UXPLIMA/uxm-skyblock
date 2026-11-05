@@ -20,6 +20,8 @@ public final class BootstrapEventRegistrar {
             AuthorityWiring authorityWiring,
             ConfigurationWiring configWiring) {
         CatalogPermissions.registerAll(pm);
+        // The language each player reads: settled on join, and the client's remembered for the next one.
+        configWiring.messages().players().ifPresent(players -> pm.registerEvents(players, plugin));
         // What a player carries is kept apart for each group of worlds, as modules/player-state.conf says.
         var scheduler = gameplayWiring.scheduler();
         java.util.concurrent.atomic.AtomicReference<com.uxplima.uxmskyblock.bukkit.state.PlayerStateListener> carried =

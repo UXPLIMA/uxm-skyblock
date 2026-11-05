@@ -225,6 +225,13 @@ public final class IslandCommandTree extends IslandCommandSettings {
 
     private @Nullable ModeAdminCommands modeAdmin;
 
+    private @Nullable IslandLanguageCommands language;
+
+    /** {@code /is lang}, the language a player reads, when the catalogue knows the players' choices. */
+    public void useLanguage(IslandLanguageCommands language) {
+        this.language = java.util.Objects.requireNonNull(language, "language must not be null");
+    }
+
     /** What an operator does to the islands of each mode, registered with the island command as {@code /isadmin}. */
     public void useModeAdmin(ModeAdminCommands admin) {
         this.modeAdmin = java.util.Objects.requireNonNull(admin, "admin must not be null");
@@ -441,6 +448,10 @@ public final class IslandCommandTree extends IslandCommandSettings {
                 .then(groups.chatCommands().buildSpy())
                 .then(groups.adminCommands().buildAdmin());
         modes.attach(root);
+        IslandLanguageCommands lang = this.language;
+        if (lang != null) {
+            root.then(lang.build());
+        }
         return root;
     }
 

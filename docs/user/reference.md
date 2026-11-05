@@ -9,6 +9,8 @@ Command words are the shipped ones; `commands.conf` renames, aliases or turns of
 
 | Command | What it does |
 |---|---|
+| `/is lang [language \| reset]` | Shows or chooses the language you read, for every UXM plugin on the server |
+| `/is lang set-player <player> <language>`, `/is lang reset-player <player>` | Sets or clears another player's language (`uxmskyblock.admin.language`) |
 | `/is help [page]` | Lists the commands you can use |
 | `/is menu` | Opens the island control panel |
 | `/is create [preset]` | Creates your island |
@@ -131,6 +133,7 @@ Command words are the shipped ones; `commands.conf` renames, aliases or turns of
 | Node | Default | What it allows |
 |---|---|---|
 | `uxmskyblock.admin.bypass` | op | Bypass all island protection and boundaries |
+| `uxmskyblock.admin.language` | op | Set or clear the language another player reads |
 | `uxmskyblock.admin.reload` | op | Reload plugin configuration |
 | `uxmskyblock.admin.doctor` | op | Ask how the plugin is, one line per thing that can be wrong |
 | `uxmskyblock.admin.manage` | op | Administrative island management |
@@ -230,6 +233,7 @@ operator wrote.
 
 | File | What it holds |
 |---|---|
+| `languages.conf` | The language each player chose, and the one their client last reported |
 | `config.conf` | This server on the network, the island grid, language, storage, player state, notifications, island roles, homes, the REST API, island backups and menu sounds |
 | `modules.conf` | Which modules run, and the capabilities they need |
 | `commands.conf` | The words of `/island` and `/isadmin`: names, aliases, words per language, on or off |

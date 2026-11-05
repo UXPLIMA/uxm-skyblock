@@ -90,6 +90,12 @@ final class IslandCommandWiring {
                                         : null)
                         .build());
         // A button runs an island command under the operator's names for it, so the verbs need the tree.
+        integration
+                .messages()
+                .players()
+                .ifPresent(
+                        players -> tree.useLanguage(new com.uxplima.uxmskyblock.bukkit.command.IslandLanguageCommands(
+                                integration.messages(), players)));
         SkyblockMenuVerbs.register(integration.menuEngine(), integration.messages(), tree::typed);
         // The roles, what each may do and the role a member holds are windows, drawn again on a change.
         var roleWindows = new com.uxplima.uxmskyblock.bukkit.menu.RoleWindows(

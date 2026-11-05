@@ -13,7 +13,7 @@ import org.spongepowered.configurate.ConfigurationNode;
  * or names them beyond the fallback, so an operator who drops in {@code messages_de.conf} has a
  * German server without a release.
  */
-public record LanguageConfiguration(String defaultLanguage, boolean followClient) {
+public record LanguageConfiguration(String defaultLanguage, boolean followClient, String force) {
 
     public static final String DEFAULT_LANGUAGE = "en";
 
@@ -23,11 +23,12 @@ public record LanguageConfiguration(String defaultLanguage, boolean followClient
             throw new IllegalArgumentException("language.default must not be blank");
         }
         defaultLanguage = defaultLanguage.trim().toLowerCase(Locale.ROOT);
+        force = force == null ? "" : force.trim();
     }
 
     /** The shipped shape: English underneath, and a player's own client language on top of it. */
     public static LanguageConfiguration defaults() {
-        return new LanguageConfiguration(DEFAULT_LANGUAGE, true);
+        return new LanguageConfiguration(DEFAULT_LANGUAGE, true, "");
     }
 
     /**
@@ -44,7 +45,14 @@ public record LanguageConfiguration(String defaultLanguage, boolean followClient
         if (configured == null || configured.isBlank()) {
             configured = DEFAULT_LANGUAGE;
         }
-        return new LanguageConfiguration(configured, followClient);
+        return new LanguageConfiguration(
+                configured, followClient, language.node("force").getString(""));
+    }
+
+    /** The same in uxmLib's terms: the default, whether the client decides, and the language forced if any. */
+    public com.uxplima.uxmlib.text.language.LanguageSettings settings() {
+        return new com.uxplima.uxmlib.text.language.LanguageSettings(
+                defaultLocale(), followClient, force.isBlank() ? null : Locale.forLanguageTag(force));
     }
 
     /** The fallback language as a {@link Locale}, which is what the locale seam speaks. */

@@ -27,12 +27,23 @@ public final class Messages {
 
     private final MessageProvider provider;
     private final LocaleSource locales;
+    private final @org.jspecify.annotations.Nullable PlayerLanguage players;
 
     public Messages(MessageProvider provider, LocaleSource locales) {
         this(provider, locales, ThemeSource.shippedInOrdinaryLetters());
     }
 
     public Messages(MessageProvider provider, LocaleSource locales, Theme theme) {
+        this(provider, locales, theme, null);
+    }
+
+    /** The catalogue over {@code players}, who choose the language they read. */
+    public Messages(
+            MessageProvider provider,
+            LocaleSource locales,
+            Theme theme,
+            @org.jspecify.annotations.Nullable PlayerLanguage players) {
+        this.players = players;
         this.provider = Objects.requireNonNull(provider, "provider must not be null");
         this.locales = Objects.requireNonNull(locales, "locales must not be null");
         provider.useStyler(new Styler(Objects.requireNonNull(theme, "theme must not be null")));
@@ -192,6 +203,11 @@ public final class Messages {
      */
     public Styler styler() {
         return provider.styler();
+    }
+
+    /** The players' own language choices, when this catalogue was built over them. */
+    public java.util.Optional<PlayerLanguage> players() {
+        return java.util.Optional.ofNullable(players);
     }
 
     /** What language each reader reads, as this plugin decides it. */
