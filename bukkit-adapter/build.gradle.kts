@@ -24,6 +24,7 @@ dependencies {
     compileOnly(libs.bundles.adventure)
 
     implementation(uxm.uxmlib.common)
+    implementation(uxm.uxmlib.storage)
     implementation(uxm.uxmlib.item)
     implementation(uxm.uxmlib.gui)
     implementation(uxm.uxmlib.menu)
@@ -66,12 +67,10 @@ tasks.shadowJar {
         "kotlin" to "kotlin",
         "org.intellij" to "intellij",
         "org.jetbrains" to "jetbrains",
-        "org.postgresql" to "postgresql",
-        "org.mariadb" to "mariadb",
     )) {
         relocate(from, "com.uxplima.uxmskyblock.libs.$to")
     }
-    // One services file per JDBC driver: merged, never the first copy alone, or only one driver is found.
+    // Several libraries ship a services file of the same name: merged, never the first copy alone.
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     filesNotMatching("META-INF/services/**") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
 }

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
+import com.uxplima.uxmlib.config.ConfigBackups;
 import com.uxplima.uxmlib.config.HoconConfig;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -25,7 +26,7 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
  * <p>A file written on the first run and never read again gives every key a later release adds to a
  * new server and to no existing one. The boot hands each shipped file here right after it writes the
  * defaults, and what the release added and the operator's file lacks is written into it. No value
- * anybody wrote is changed, and the file as it was is kept beside it as {@code <name>.bak}.
+ * anybody wrote is changed, and the file as it was is kept in {@code backups/} beside it, the last five copies.
  *
  * <p>A key is added only when it is new to this release. The file each release shipped is kept under
  * {@code .defaults/}, and a key that file already held and the operator's does not was deleted on
@@ -123,13 +124,9 @@ public final class PluginSettings {
         return changed;
     }
 
-    /** Copies {@code file} beside itself as {@code .bak}, before it is written again. */
+    /** Keeps a dated copy of {@code file} in the backups folder beside it, before it is written again. */
     private static void keepAsItWas(Path file) {
-        try {
-            Files.copy(file, file.resolveSibling(file.getFileName() + ".bak"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException unwritable) {
-            throw new IllegalStateException("Could not keep a copy of " + file, unwritable);
-        }
+        ConfigBackups.keep(file);
     }
 
     private static void write(Path file, byte[] bytes) {

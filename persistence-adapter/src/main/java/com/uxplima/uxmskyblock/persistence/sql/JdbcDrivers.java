@@ -10,11 +10,10 @@ import java.util.Optional;
 /**
  * Makes the JDBC driver a connection URL needs known before the pool asks for it.
  *
- * <p>The drivers ship inside the plugin, and a JDBC driver is found through the services file the
- * JVM reads once, with the server's class loader, before any plugin exists. The plugin's drivers are
- * never in that scan: a driver is only known once its class is loaded, and nothing loaded ours. A
- * server pointed at PostgreSQL did not start, "No suitable driver", though the driver sat in the jar.
- * The driver is loaded here with the plugin's own class loader, which registers it, and a URL no
+ * <p>The plugin's loader fetches the MariaDB and PostgreSQL drivers onto the plugin's class path, and a JDBC
+ * driver is found through the services file the JVM reads once, with the server's class loader, before any
+ * plugin exists. The plugin's drivers are never in that scan: a driver is only known once its class is
+ * loaded. The driver is loaded here with the plugin's own class loader, which registers it, and a URL no
  * driver answers is refused with its reason before the pool is built.
  */
 public final class JdbcDrivers {
@@ -54,8 +53,8 @@ public final class JdbcDrivers {
             return DriverManager.getDriver(jdbcUrl);
         } catch (SQLException none) {
             throw new IllegalStateException(
-                    "No JDBC driver on this server accepts the database URL. The plugin ships drivers for "
-                            + "jdbc:mariadb:, jdbc:mysql: and jdbc:postgresql: URLs.",
+                    "No JDBC driver on this server accepts the database URL. The plugin fetches drivers for "
+                            + "MariaDB and PostgreSQL, and the server carries MySQL's.",
                     none);
         }
     }

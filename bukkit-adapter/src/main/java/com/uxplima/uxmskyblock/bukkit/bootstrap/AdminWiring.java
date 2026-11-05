@@ -261,14 +261,14 @@ public final class AdminWiring {
     }
 
     /**
-     * {@code storage.capture-timeout}: how long a backup waits for every region to hand its chunks
+     * {@code island-backups.capture-timeout}: how long a backup waits for every region to hand its chunks
      * over. A value that does not read as a positive duration keeps the default, and says so.
      */
     static java.time.Duration captureTimeoutOf(
             org.spongepowered.configurate.@org.jspecify.annotations.Nullable ConfigurationNode rootNode) {
         String raw = rootNode == null
                 ? null
-                : rootNode.node("storage", "capture-timeout").getString();
+                : rootNode.node("island-backups", "capture-timeout").getString();
         if (raw == null || raw.isBlank()) {
             return WorldDimensionSnapshotAdapter.DEFAULT_CAPTURE_TIMEOUT;
         }
@@ -281,7 +281,7 @@ public final class AdminWiring {
             // Reported below with the value that was written.
         }
         java.util.logging.Logger.getLogger(AdminWiring.class.getName())
-                .warning(() -> "storage.capture-timeout '" + raw + "' is not a positive duration, so "
+                .warning(() -> "island-backups.capture-timeout '" + raw + "' is not a positive duration, so "
                         + WorldDimensionSnapshotAdapter.DEFAULT_CAPTURE_TIMEOUT + " is used.");
         return WorldDimensionSnapshotAdapter.DEFAULT_CAPTURE_TIMEOUT;
     }

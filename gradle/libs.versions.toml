@@ -2,8 +2,6 @@
 
 [versions]
 adventure = "5.2.0"
-mariadb-jdbc = "3.5.3"
-postgresql = "42.7.4"
 gson = "2.11.0"
 slf4j = "2.0.16"
 javalin = "6.4.0"
@@ -12,8 +10,6 @@ lettuce = "7.6.0.RELEASE"
 [libraries]
 adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
 adventure-mini = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
-mariadb-jdbc = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-jdbc" }
-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
