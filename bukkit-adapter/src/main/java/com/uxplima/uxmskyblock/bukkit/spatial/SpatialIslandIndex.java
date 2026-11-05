@@ -97,6 +97,17 @@ public final class SpatialIslandIndex {
     }
 
     /**
+     * Holds {@code island} in place of the copy read before a change to its members or roles, where it stands. The
+     * index answers who belongs to an island and what each role may do, so a player who joined was a visitor to it,
+     * kept off it by the starter quarantine and refused every block, until the island was read again after a
+     * restart. An island not held is left out: the next touch reads it.
+     */
+    public void refresh(Island island) {
+        Objects.requireNonNull(island, "island must not be null");
+        islandMap.computeIfPresent(island.id(), (id, held) -> island);
+    }
+
+    /**
      * Removes an island and purges all of its chunk mappings from the spatial index.
      */
     public void removeIsland(IslandId islandId) {
