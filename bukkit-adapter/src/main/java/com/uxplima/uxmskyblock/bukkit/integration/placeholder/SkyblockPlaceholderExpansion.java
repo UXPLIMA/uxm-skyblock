@@ -2,7 +2,6 @@ package com.uxplima.uxmskyblock.bukkit.integration.placeholder;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.OfflinePlayer;
 
@@ -20,7 +18,6 @@ import com.uxplima.uxmlib.hook.placeholder.PlaceholderRegistry;
 import com.uxplima.uxmskyblock.bukkit.session.PlayerSessionCoordinator;
 import com.uxplima.uxmskyblock.core.application.bank.IslandBankPort;
 import com.uxplima.uxmskyblock.core.application.island.IslandStoragePort;
-import com.uxplima.uxmskyblock.core.application.leaderboard.IslandLeaderboardPort;
 import com.uxplima.uxmskyblock.core.application.scheduler.SchedulerPort;
 import com.uxplima.uxmskyblock.core.application.upgrade.IslandUpgradeStoragePort;
 import com.uxplima.uxmskyblock.core.domain.bank.IslandBank;
@@ -28,8 +25,6 @@ import com.uxplima.uxmskyblock.core.domain.identity.IslandId;
 import com.uxplima.uxmskyblock.core.domain.identity.ProfileId;
 import com.uxplima.uxmskyblock.core.domain.island.Island;
 import com.uxplima.uxmskyblock.core.domain.island.IslandMember;
-import com.uxplima.uxmskyblock.core.domain.leaderboard.LeaderboardCategory;
-import com.uxplima.uxmskyblock.core.domain.leaderboard.LeaderboardEntry;
 import com.uxplima.uxmskyblock.core.domain.upgrade.UpgradeId;
 import org.jspecify.annotations.Nullable;
 
@@ -41,12 +36,11 @@ import org.jspecify.annotations.Nullable;
  */
 public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
 
-    public static final String IDENTIFIER = "skyblock";
+    public static final String IDENTIFIER = "uxmskyblock";
 
     private static final String ONEBLOCK = "oneblock_";
     private static final String CHUNKBLOCK = "chunkblock_";
     public static final long CACHE_TTL_MS = 5000L;
-    public static final long LEADERBOARD_CACHE_TTL_MS = 15_000L;
 
     public record CachedPlayerIsland(
             boolean hasIsland,
@@ -71,7 +65,6 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
     private final IslandStoragePort islandStoragePort;
     private final IslandBankPort islandBankPort;
     private final IslandUpgradeStoragePort upgradeStoragePort;
-    private final IslandLeaderboardPort leaderboardPort;
     private final SchedulerPort schedulerPort;
     private final java.util.function.Function<UUID, Optional<ProfileId>> activeProfileProvider;
 
@@ -81,29 +74,17 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
     private volatile boolean published;
     private volatile java.util.function.@Nullable UnaryOperator<Map<UpgradeId, Integer>> upgradeStanding;
 
-    private final Map<LeaderboardCategory, List<LeaderboardEntry>> cachedLeaderboards = new ConcurrentHashMap<>();
-    /**
-     * Each island's place on the level board, replaced whole on every refresh.
-     *
-     * <p>Writing the new places over the old ones left an island that fell off the board holding the
-     * place it last had, so two islands could both read third and a deleted island kept its rank.
-     */
-    private volatile Map<UUID, Integer> cachedPlayerRanks = Map.of();
-
-    private final AtomicBoolean refreshingLeaderboards = new AtomicBoolean(false);
-    private volatile long lastLeaderboardRefreshMs = 0;
+    private volatile com.uxplima.uxmlib.board.@Nullable BoardAnswers boards;
 
     public SkyblockPlaceholderExpansion(
             IslandStoragePort islandStoragePort,
             IslandBankPort islandBankPort,
             IslandUpgradeStoragePort upgradeStoragePort,
-            IslandLeaderboardPort leaderboardPort,
             SchedulerPort schedulerPort,
             java.util.function.Function<UUID, Optional<ProfileId>> activeProfileProvider) {
         this.islandStoragePort = Objects.requireNonNull(islandStoragePort, "islandStoragePort must not be null");
         this.islandBankPort = Objects.requireNonNull(islandBankPort, "islandBankPort must not be null");
         this.upgradeStoragePort = Objects.requireNonNull(upgradeStoragePort, "upgradeStoragePort must not be null");
-        this.leaderboardPort = Objects.requireNonNull(leaderboardPort, "leaderboardPort must not be null");
         this.schedulerPort = Objects.requireNonNull(schedulerPort, "schedulerPort must not be null");
         this.activeProfileProvider =
                 Objects.requireNonNull(activeProfileProvider, "activeProfileProvider must not be null");
@@ -116,14 +97,12 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
             IslandStoragePort islandStoragePort,
             IslandBankPort islandBankPort,
             IslandUpgradeStoragePort upgradeStoragePort,
-            IslandLeaderboardPort leaderboardPort,
             SchedulerPort schedulerPort,
             @Nullable PlayerSessionCoordinator sessionCoordinator) {
         this(
                 islandStoragePort,
                 islandBankPort,
                 upgradeStoragePort,
-                leaderboardPort,
                 schedulerPort,
                 sessionCoordinator != null ? sessionCoordinator::activeProfile : uuid -> Optional.empty());
     }
@@ -132,15 +111,8 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
             IslandStoragePort islandStoragePort,
             IslandBankPort islandBankPort,
             IslandUpgradeStoragePort upgradeStoragePort,
-            IslandLeaderboardPort leaderboardPort,
             SchedulerPort schedulerPort) {
-        this(
-                islandStoragePort,
-                islandBankPort,
-                upgradeStoragePort,
-                leaderboardPort,
-                schedulerPort,
-                uuid -> Optional.empty());
+        this(islandStoragePort, islandBankPort, upgradeStoragePort, schedulerPort, uuid -> Optional.empty());
     }
 
     /**
@@ -162,6 +134,11 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
     /** Answers {@code oneblock_<name>} for the island a player belongs to, while OneBlock is on. */
     public void useOneBlock(com.uxplima.uxmskyblock.bukkit.oneblock.@Nullable OneBlockPanel oneBlock) {
         this.oneBlock = oneBlock;
+    }
+
+    /** The island boards placeholders answer from; nothing answers them until this is given. */
+    public void useBoards(com.uxplima.uxmlib.board.@Nullable BoardAnswers boards) {
+        this.boards = boards;
     }
 
     public PlaceholderRegistry registry() {
@@ -275,9 +252,12 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
         Objects.requireNonNull(params, "params");
         String normalized = params.toLowerCase(Locale.ROOT).trim();
 
-        // Leaderboard global placeholders (independent of player)
-        if (normalized.startsWith("leaderboard_top_")) {
-            return resolveLeaderboardTop(normalized.substring("leaderboard_top_".length()));
+        // The island boards: top_<board>_alltime_<n>_name|value|head, rank_ and value_ of the reader, resets_.
+        com.uxplima.uxmlib.board.BoardAnswers answers = boards;
+        if (answers != null && answers.handles(normalized)) {
+            String answer = answers.answer(
+                    player == null ? null : player.getUniqueId(), player == null ? null : player.getName(), normalized);
+            return answer == null ? "" : answer;
         }
 
         if (player == null || player.getUniqueId() == null) {
@@ -303,7 +283,6 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
                 String.format(Locale.US, "%.2f", (double) cached.bankBalanceMinorUnits() / 100.0);
             case "island_bank_balance_raw", "bank_balance_raw" -> String.valueOf(cached.bankBalanceMinorUnits());
             case "island_bank_crystals", "bank_crystals" -> String.valueOf(cached.crystals());
-            case "island_leaderboard_rank", "rank" -> resolvePlayerRank(cached.islandId());
             default -> {
                 if (normalized.startsWith("island_upgrade_tier_")) {
                     String upgradeKey = normalized.substring("island_upgrade_tier_".length());
@@ -334,97 +313,5 @@ public final class SkyblockPlaceholderExpansion implements PlaceholderProvider {
                 yield null;
             }
         };
-    }
-
-    public void checkLeaderboardRefresh() {
-        if (System.currentTimeMillis() - lastLeaderboardRefreshMs > LEADERBOARD_CACHE_TTL_MS) {
-            scheduleAsyncLeaderboardRefresh();
-        }
-    }
-
-    public void scheduleAsyncLeaderboardRefresh() {
-        if (refreshingLeaderboards.compareAndSet(false, true)) {
-            schedulerPort.async(() -> {
-                try {
-                    refreshLeaderboardsSync();
-                } catch (Exception ex) {
-                    LOGGER.log(java.util.logging.Level.FINEST, "Async leaderboard refresh failed", ex);
-                } finally {
-                    refreshingLeaderboards.set(false);
-                }
-            });
-        }
-    }
-
-    public void refreshLeaderboardsSync() {
-        for (LeaderboardCategory cat : LeaderboardCategory.values()) {
-            try {
-                List<LeaderboardEntry> top = leaderboardPort.fetchTopIslands(cat, 100);
-                cachedLeaderboards.put(cat, top);
-                if (cat == LeaderboardCategory.LEVEL) {
-                    Map<UUID, Integer> ranks = new HashMap<>();
-                    for (int i = 0; i < top.size(); i++) {
-                        ranks.putIfAbsent(top.get(i).islandId().value(), i + 1);
-                    }
-                    cachedPlayerRanks = Map.copyOf(ranks);
-                }
-            } catch (Exception ex) {
-                LOGGER.log(java.util.logging.Level.FINEST, "Failed to refresh leaderboard for " + cat, ex);
-            }
-        }
-        lastLeaderboardRefreshMs = System.currentTimeMillis();
-    }
-
-    private String resolvePlayerRank(@Nullable UUID islandId) {
-        if (islandId == null) {
-            return "N/A";
-        }
-        checkLeaderboardRefresh();
-        Integer rank = cachedPlayerRanks.get(islandId);
-        return rank != null ? String.valueOf(rank) : "N/A";
-    }
-
-    private @Nullable String resolveLeaderboardTop(String subParams) {
-        // subParams format: <category>_<rank>_<field>
-        // e.g. "level_1_name" or "level_1_score"
-        List<String> parts = com.google.common.base.Splitter.on('_').splitToList(subParams);
-        if (parts.size() < 3) {
-            return null;
-        }
-
-        String catName = parts.get(0);
-        LeaderboardCategory category =
-                switch (catName) {
-                    case "level" -> LeaderboardCategory.LEVEL;
-                    case "networth", "worth" -> LeaderboardCategory.WORTH;
-                    case "bank" -> LeaderboardCategory.BANK;
-                    default -> null;
-                };
-        if (category == null) {
-            return null;
-        }
-
-        int rank;
-        try {
-            rank = Integer.parseInt(parts.get(1));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        if (rank < 1) {
-            return null;
-        }
-
-        checkLeaderboardRefresh();
-        List<LeaderboardEntry> top = cachedLeaderboards.get(category);
-        String field = parts.get(2);
-        if (top != null && top.size() >= rank) {
-            LeaderboardEntry entry = top.get(rank - 1);
-            if ("score".equals(field)) {
-                return String.valueOf(entry.score());
-            } else if ("id".equals(field)) {
-                return entry.islandId().value().toString();
-            }
-        }
-        return "N/A";
     }
 }

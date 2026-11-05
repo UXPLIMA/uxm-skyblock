@@ -31,7 +31,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * What a ChunkBlock island's players see and do: the panel behind the chunks command, the unlock of the
- * chunk a player faces, and the {@code %skyblock_chunkblock_<name>%} placeholders.
+ * chunk a player faces, and the {@code %uxmskyblock_chunkblock_<name>%} placeholders.
  *
  * <p>The panel is {@code menus/island-chunks.conf}, so the operator decides what it shows. Every value
  * the file may name is listed in {@link #values}.

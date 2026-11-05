@@ -191,24 +191,37 @@ stays out of their command list, and typed anyway it answers with the no-permiss
 
 ## Placeholders
 
-PlaceholderAPI, identifier `skyblock`. Values are cached and refreshed in the background.
+PlaceholderAPI, identifier `uxmskyblock`. Values are cached and refreshed in the background.
 
 | Placeholder | Value |
 |---|---|
-| `%skyblock_has_island%` | `true` when the player belongs to an island |
-| `%skyblock_island_id%` | the island's id |
-| `%skyblock_island_role%`, `%skyblock_role%` | the player's role on the island |
-| `%skyblock_island_members_count%`, `%skyblock_members_count%` | how many members the island has |
-| `%skyblock_island_bank_balance%`, `%skyblock_bank_balance%` | the bank balance, formatted |
-| `%skyblock_island_bank_balance_raw%`, `%skyblock_bank_balance_raw%` | the bank balance in minor units |
-| `%skyblock_island_bank_crystals%`, `%skyblock_bank_crystals%` | the island's crystals |
-| `%skyblock_island_leaderboard_rank%`, `%skyblock_rank%` | the island's place on the level board |
-| `%skyblock_island_upgrade_tier_<upgrade>%`, `%skyblock_upgrade_tier_<upgrade>%` | the tier the island holds of an upgrade |
-| `%skyblock_leaderboard_top_<board>_<n>_<field>%` | board `level`, `worth` (or `networth`) or `bank`; field `score` or `id` of the n-th island |
-| `%skyblock_oneblock_is_oneblock%` | `true` on a OneBlock island |
-| `%skyblock_oneblock_<value>%` | `phase`, `phase_id`, `phase_number`, `phase_count`, `blocks_broken`, `phase_blocks`, `phase_length`, `phase_left`, `phase_percent`, `next_phase`, `next_phase_id`, `next_moment`, `cycle`, `my_breaks`, `top_member`, `top_member_breaks` |
-| `%skyblock_chunkblock_is_chunkblock%` | `true` on a ChunkBlock island |
-| `%skyblock_chunkblock_open_chunks%`, `%skyblock_chunkblock_next_level%` | the open chunks and the next level of a ChunkBlock island |
+| `%uxmskyblock_has_island%` | `true` when the player belongs to an island |
+| `%uxmskyblock_island_id%` | the island's id |
+| `%uxmskyblock_island_role%`, `%uxmskyblock_role%` | the player's role on the island |
+| `%uxmskyblock_island_members_count%`, `%uxmskyblock_members_count%` | how many members the island has |
+| `%uxmskyblock_island_bank_balance%`, `%uxmskyblock_bank_balance%` | the bank balance, formatted |
+| `%uxmskyblock_island_bank_balance_raw%`, `%uxmskyblock_bank_balance_raw%` | the bank balance in minor units |
+| `%uxmskyblock_island_bank_crystals%`, `%uxmskyblock_bank_crystals%` | the island's crystals |
+| `%uxmskyblock_island_upgrade_tier_<upgrade>%`, `%uxmskyblock_upgrade_tier_<upgrade>%` | the tier the island holds of an upgrade |
+| `%uxmskyblock_oneblock_is_oneblock%` | `true` on a OneBlock island |
+| `%uxmskyblock_oneblock_<value>%` | `phase`, `phase_id`, `phase_number`, `phase_count`, `blocks_broken`, `phase_blocks`, `phase_length`, `phase_left`, `phase_percent`, `next_phase`, `next_phase_id`, `next_moment`, `cycle`, `my_breaks`, `top_member`, `top_member_breaks` |
+| `%uxmskyblock_chunkblock_is_chunkblock%` | `true` on a ChunkBlock island |
+| `%uxmskyblock_chunkblock_open_chunks%`, `%uxmskyblock_chunkblock_next_level%` | the open chunks and the next level of a ChunkBlock island |
+
+### Leaderboards
+
+Three boards, `level`, `worth` and `bank`, each for all time (`alltime`). A place is an island, under its owner's
+name and head; a player's own place and value are their island's.
+
+| Placeholder | Value |
+|---|---|
+| `%uxmskyblock_top_<board>_alltime_<n>_name%` | the owner of the island at place `n` |
+| `%uxmskyblock_top_<board>_alltime_<n>_value%` | that island's level, worth or bank balance |
+| `%uxmskyblock_top_<board>_alltime_<n>_head%` | the owner's name or id, for a `<head:...>` tag |
+| `%uxmskyblock_rank_<board>_alltime%` | the reader's island's place |
+| `%uxmskyblock_value_<board>_alltime%` | the reader's island's value |
+
+A place nobody holds answers the catalogue's `placeholder.nobody`, and a missing value `placeholder.none`.
 
 ## Files
 

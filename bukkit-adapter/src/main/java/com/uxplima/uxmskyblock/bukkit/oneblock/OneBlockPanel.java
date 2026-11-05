@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * What a OneBlock island's players can read about it: the panel behind {@code /is oneblock}, and the
- * {@code %skyblock_oneblock_<name>%} placeholders.
+ * {@code %uxmskyblock_oneblock_<name>%} placeholders.
  *
  * <p>The panel is {@code menus/island-oneblock.conf}, so the operator decides what it shows and where.
  * A Bedrock player gets the same file as a native form, which the menu engine draws from it. Every

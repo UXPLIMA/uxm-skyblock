@@ -50,7 +50,7 @@ public final class SkyblockHealth {
                 "placeholders",
                 () -> published.getAsBoolean()
                         ? HealthResult.ok("published to PlaceholderAPI")
-                        : HealthResult.warn("PlaceholderAPI is not on this server, so %skyblock_...% reads"
+                        : HealthResult.warn("PlaceholderAPI is not on this server, so %uxmskyblock_...% reads"
                                 + " nothing in other plugins; skyblock itself works"));
     }
 

@@ -72,6 +72,7 @@ public final class IntegrationWiring implements AutoCloseable {
     private final com.uxplima.uxmskyblock.core.application.scheduler.SchedulerPort scheduler;
 
     private @org.jspecify.annotations.Nullable AutoCloseable authorityHeartbeat;
+    private @org.jspecify.annotations.Nullable AutoCloseable boardRefresh;
     private final ClusterTransportWiring clusterTransport;
     private final DurableEventTransportPort eventTransport;
     private final VelocityBridgePort velocityBridge;
@@ -189,10 +190,10 @@ public final class IntegrationWiring implements AutoCloseable {
                 persistence.islandStoragePort(),
                 persistence.islandBankPort(),
                 persistence.islandUpgradeStoragePort(),
-                persistence.islandLeaderboardPort(),
                 gameplay.scheduler(),
                 authority.sessionCoordinator());
         this.placeholderExpansion.useUpgradeStanding(gameplay.upgradeService()::standing);
+        this.placeholderExpansion.useBoards(boards(persistence, gameplay, config));
 
         this.outboxDispatcher = new TransactionalOutboxDispatcher(
                 persistence.outboxPort(), gameplay.scheduler(), serverNodeId.value() + "-outbox");
@@ -461,8 +462,64 @@ public final class IntegrationWiring implements AutoCloseable {
         return clusterTransport.chatTransport();
     }
 
+    /**
+     * The level, worth and bank boards on uxmLib's board module, read again on the async lane every
+     * {@code leaderboard.refresh-seconds}; placeholders answer from the reading held.
+     */
+    private com.uxplima.uxmlib.board.BoardAnswers boards(
+            PersistenceBootstrap persistence, GameplayWiring gameplay, ConfigurationWiring config) {
+        com.uxplima.uxmskyblock.bukkit.top.IslandBoards islandBoards =
+                new com.uxplima.uxmskyblock.bukkit.top.IslandBoards(
+                        persistence.islandLeaderboardPort(),
+                        persistence.islandStoragePort(),
+                        uuid -> org.bukkit.Bukkit.getOfflinePlayer(uuid).getName());
+        org.spongepowered.configurate.ConfigurationNode node = config.rootNode() == null
+                ? org.spongepowered.configurate.BasicConfigurationNode.root()
+                : config.rootNode().node("leaderboard");
+        int size = Math.max(1, node.node("size").getInt(10));
+        java.time.Duration refresh = java.time.Duration.ofSeconds(
+                Math.max(5, node.node("refresh-seconds").getInt(60)));
+        String emptyHead = node.node("empty-head").getString(com.uxplima.uxmlib.board.BoardSettings.STEVE);
+        com.uxplima.uxmlib.board.Leaderboard leaderboard = new com.uxplima.uxmlib.board.Leaderboard(
+                com.uxplima.uxmskyblock.bukkit.top.IslandBoards.noHistory(),
+                islandBoards.boards(),
+                uuid -> {
+                    String name = org.bukkit.Bukkit.getOfflinePlayer(uuid).getName();
+                    return name == null ? uuid.toString() : name;
+                },
+                () -> new com.uxplima.uxmlib.board.BoardSettings(
+                        size,
+                        refresh,
+                        java.util.Set.of(com.uxplima.uxmlib.board.BoardPeriod.ALLTIME),
+                        new com.uxplima.uxmlib.board.BoardCalendar(
+                                java.time.ZoneId.systemDefault(), java.time.DayOfWeek.MONDAY),
+                        1,
+                        emptyHead),
+                java.time.Clock.systemUTC());
+        com.uxplima.uxmlib.board.Standings standings = new com.uxplima.uxmlib.board.Standings(
+                com.uxplima.uxmskyblock.bukkit.top.IslandBoards.noHistory(), leaderboard);
+        this.boardRefresh = gameplay.scheduler().repeatAsync(leaderboard::refresh, java.time.Duration.ZERO, refresh);
+        return new com.uxplima.uxmlib.board.BoardAnswers(
+                leaderboard,
+                standings,
+                com.uxplima.uxmskyblock.bukkit.top.IslandBoards.text((key, reader, values) -> {
+                    org.bukkit.entity.Player online = reader == null ? null : org.bukkit.Bukkit.getPlayer(reader);
+                    net.kyori.adventure.audience.Audience viewer =
+                            online != null ? online : org.bukkit.Bukkit.getConsoleSender();
+                    net.kyori.adventure.text.minimessage.tag.resolver.TagResolver[] tokens = values.entrySet().stream()
+                            .map(entry -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed(
+                                    entry.getKey(), entry.getValue()))
+                            .toArray(net.kyori.adventure.text.minimessage.tag.resolver.TagResolver[]::new);
+                    return net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText()
+                            .serialize(messages.renderPlain(viewer, key, tokens));
+                }),
+                () -> emptyHead);
+    }
+
     @Override
     public void close() {
+        closeQuietly(this.boardRefresh, "the leaderboard refresh");
+        this.boardRefresh = null;
         closeAuthorityHeartbeat();
         housekeeping.close();
         closeQuietly(this.sagaRecovery, "the economy saga recovery");
