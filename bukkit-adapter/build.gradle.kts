@@ -40,6 +40,8 @@ dependencies {
     implementation(uxm.uxmlib.packet)
     implementation(libs.lettuce.core)
     implementation(uxm.bstats.bukkit)
+
+    testImplementation(uxm.archunit.junit)
 }
 
 tasks.shadowJar {

@@ -8,4 +8,6 @@ dependencies {
 
     implementation(uxm.uxmlib.storage)
     implementation(libs.gson)
+
+    testImplementation(uxm.uxmlib.storage.testing)
 }
