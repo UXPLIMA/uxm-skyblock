@@ -88,7 +88,8 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
  * │   └── ...
  * └── messages/              # Multi-locale catalog files
  *     ├── messages_en.conf
- *     └── messages_tr.conf
+ *     ├── messages_tr.conf
+ *     └── messages_de, es, fr, pt and ru.conf
  * </pre>
  */
 public final class ConfigurationLoader {
@@ -177,7 +178,15 @@ public final class ConfigurationLoader {
         ThemeSource.saveShared(dataDir, ConfigurationLoader.class.getClassLoader());
         // A catalogue or a menu a release restyles reaches the server that already has a copy: what the
         // operator never edited takes this release's words and layout, and what they edited stays theirs.
-        for (String language : new String[] {"messages_en.conf", "messages_tr.conf"}) {
+        for (String language : new String[] {
+            "messages_en.conf",
+            "messages_tr.conf",
+            "messages_de.conf",
+            "messages_es.conf",
+            "messages_fr.conf",
+            "messages_pt.conf",
+            "messages_ru.conf"
+        }) {
             Path catalogue = dataDir.resolve("messages").resolve(language);
             ConfigurationFiles.unpackResource(plugin, "messages/" + language, catalogue);
             ConfigurationFiles.bringUpToDate(plugin, dataDir, catalogue, "messages/" + language);

@@ -56,7 +56,8 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
  * │   └── ...
  * └── messages/              # Multi-locale catalog files
  *     ├── messages_en.conf
- *     └── messages_tr.conf
+ *     ├── messages_tr.conf
+ *     └── messages_de, es, fr, pt and ru.conf
  * </pre>
  */
 public final class ConfigurationWiring extends ModeConfigurations {
